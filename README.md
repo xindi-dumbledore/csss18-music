@@ -8,3 +8,6 @@ Package information for music21: http://web.mit.edu/music21/
 
 ## Data parsing
 In the `Data` folder, the ipython notebook provides some codes to extract note sequence from midi data and the json file is a sample of the extracted note sequences.
+
+## Higher order network (HON)
+The code higher order network: https://github.com/xyjprc/hon
