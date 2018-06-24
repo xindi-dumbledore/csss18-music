@@ -33,7 +33,7 @@ MinSupport = 1
 ## Initialize user parameters
 #InputFileName = '../../../../C2/data/synthetic/1098_ModifyMixedOrder.csv'
 #InputFileName = '../data/subpath_30_notime.txt'
-InputFileName = 'data/hon_data/Mozart K117 Offertorio Jubilate Deo_0.csv'
+#InputFileName = 'data/hon_data/Mozart K117 Offertorio Jubilate Deo_0.csv'
 #InputFileName = 'data/singapore_travel_paths.csv'
 
 
@@ -41,8 +41,8 @@ InputFileName = 'data/hon_data/Mozart K117 Offertorio Jubilate Deo_0.csv'
 #InputFileName = '../data/synthetic-major/1000_ModifyMixedOrder.csv'
 #InputFileName = '../data/traces-test.csv'
 #InputFileName = '../data/traces-lloyds.csv'
-OutputRulesFile = 'outputs/rules-Mozart K117 Offertorio Jubilate Deo_0.csv'
-OutputNetworkFile = 'outputs/network-Mozart K117 Offertorio Jubilate Deo_0.csv'
+#OutputRulesFile = 'outputs/rules-Mozart K117 Offertorio Jubilate Deo_0.csv'
+#OutputNetworkFile = 'outputs/network-Mozart K117 Offertorio Jubilate Deo_0.csv'
 
 LastStepsHoldOutForTesting = 0
 MinimumLengthForTraining = 1
@@ -130,6 +130,7 @@ def SequenceToNode(seq):
     else:
         return node
 
+
 def VPrint(string):
     if Verbose:
         print(string)
@@ -168,7 +169,7 @@ if __name__ == "__main__":
 	fnames = [f for f in os.listdir(InputDirName) if os.path.isfile(os.path.join(InputDirName, f))]
 
 	for f in fnames:
-		InputFileName = os.path.join(InputFileName, f)
+		InputFileName = os.path.join(InputDirName, f)
 		OutputNetworkFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'network.csv'))
 		OutputRulesFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'rules.csv'))
 		BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile)
