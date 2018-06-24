@@ -18,8 +18,7 @@ import BuildNetwork
 import itertools
 import sys
 import os
-
-
+import csv
 
 ## Initialize algorithm parameters
 MaxOrder = 99
@@ -81,8 +80,8 @@ def ReadSequentialData(InputFileName):
                 continue
 
             RawTrajectories.append([ship, movements])
-
-
+    print(RawTrajectories)
+    print('trajectory',len(RawTrajectories))
     return RawTrajectories
 
 
@@ -107,14 +106,19 @@ def DumpRules(Rules, OutputRulesFile):
             for Target in Rules[Source]:
                 f.write(' '.join([' '.join([str(x) for x in Source]), '=>', Target, str(Rules[Source][Target])]) + '\n')
 
+
 def DumpNetwork(Network, OutputNetworkFile):
     VPrint('Dumping network to file')
     LineCount = 0
+    print('LineCount', LineCount)
     with open(OutputNetworkFile, 'w') as f:
+    	writer = csv.writer(f, delimiter='\t')
         for source in Network:
             for target in Network[source]:
-                f.write('\t'.join([SequenceToNode(source), SequenceToNode(target), str(Network[source][target])]) + '\n')
+                writer.writerow([SequenceToNode(source), SequenceToNode(target), str(Network[source][target])])
+                #f.write('\t'.join([SequenceToNode(source), SequenceToNode(target), str(Network[source][target])]) + '\n')
                 LineCount += 1
+        
     VPrint(str(LineCount) + ' lines written.')
 
 def SequenceToNode(seq):
@@ -143,6 +147,7 @@ def BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile):
     Rules = BuildRulesFastParameterFree.ExtractRules(TrainingTrajectory, MaxOrder, MinSupport)
     DumpRules(Rules, OutputRulesFile)
     Network = BuildNetwork.BuildNetwork(Rules)
+    print('Length:', len(Network))
     DumpNetwork(Network, OutputNetworkFile)
     VPrint('Done: '+InputFileName)
 
@@ -169,10 +174,12 @@ if __name__ == "__main__":
 	fnames = [f for f in os.listdir(InputDirName) if os.path.isfile(os.path.join(InputDirName, f))]
 
 	for f in fnames:
+		print(f)
 		InputFileName = os.path.join(InputDirName, f)
 		OutputNetworkFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'network.csv'))
 		OutputRulesFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'rules.csv'))
 		BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile)
+		
 	"""
     print('FREQ mode!!!!!!')
     RawTrajectories = ReadSequentialData(InputFileName)
