@@ -2,55 +2,55 @@ graph [
   directed 1
   node [
     id 0
-    label "69|"
+    label "-24|-10.0"
   ]
   node [
     id 1
-    label "45|"
+    label "-10|0"
   ]
   node [
     id 2
-    label "69|40"
+    label "-25|"
   ]
   node [
     id 3
-    label "44|"
+    label "0|-29"
   ]
   node [
     id 4
-    label "59|69"
+    label "-24|-10.-22"
   ]
   node [
     id 5
-    label "69|45"
+    label "-29|"
   ]
   node [
     id 6
-    label "59|45"
+    label "0|-25"
   ]
   node [
     id 7
-    label "69|47"
+    label "0|-22"
   ]
   node [
     id 8
-    label "45|59.45"
+    label "-10|"
   ]
   node [
     id 9
-    label "59|"
+    label "-24|-10.-24"
   ]
   node [
     id 10
-    label "45|59.47"
+    label "-10|-24"
   ]
   node [
     id 11
-    label "59|47"
+    label "-10|-22"
   ]
   node [
     id 12
-    label "69|44"
+    label "0|"
   ]
   node [
     id 13
@@ -58,78 +58,63 @@ graph [
   ]
   node [
     id 14
-    label "45|59.69"
+    label "-24|"
   ]
   node [
     id 15
-    label "40|"
+    label "0|-24"
   ]
   node [
     id 16
-    label "128|69.44"
+    label "128|0.-25"
   ]
   node [
     id 17
-    label "47|"
+    label "-22|"
   ]
   edge [
     source 0
-    target 4
-    weight 1.0
+    target 10
+    weight 0.833333333333
   ]
   edge [
     source 0
-    target 13
-    weight 0.257142857143
-  ]
-  edge [
-    source 0
-    target 15
-    weight 0.228571428571
+    target 17
+    weight 0.166666666667
   ]
   edge [
     source 1
-    target 5
-    weight 1.0
+    target 0
+    weight 0.833333333333
   ]
   edge [
-    source 1
+    source 2
     target 6
     weight 1.0
   ]
   edge [
-    source 1
-    target 17
-    weight 0.454545454545
-  ]
-  edge [
-    source 2
+    source 3
     target 13
     weight 0.5
   ]
   edge [
-    source 2
-    target 15
+    source 3
+    target 5
     weight 0.5
   ]
   edge [
-    source 3
-    target 12
-    weight 1.0
-  ]
-  edge [
     source 4
-    target 14
-    weight 0.166666666667
+    target 17
+    weight 1.0
   ]
   edge [
     source 5
-    target 4
-    weight 1.0
+    target 3
+    weight 0.5
   ]
   edge [
     source 6
-    target 8
+    target 16
     weight 1.0
   ]
   edge [
@@ -139,28 +124,43 @@ graph [
   ]
   edge [
     source 8
-    target 5
+    target 14
     weight 1.0
   ]
   edge [
     source 9
-    target 1
+    target 15
     weight 1.0
   ]
   edge [
     source 10
-    target 17
+    target 9
     weight 1.0
   ]
   edge [
     source 11
-    target 10
+    target 4
     weight 1.0
   ]
   edge [
     source 12
-    target 16
+    target 13
+    weight 0.257142857143
+  ]
+  edge [
+    source 12
+    target 5
+    weight 0.228571428571
+  ]
+  edge [
+    source 12
+    target 1
     weight 1.0
+  ]
+  edge [
+    source 13
+    target 2
+    weight 0.888888888889
   ]
   edge [
     source 13
@@ -168,24 +168,24 @@ graph [
     weight 0.111111111111
   ]
   edge [
-    source 13
-    target 3
-    weight 0.888888888889
+    source 14
+    target 10
+    weight 1.0
   ]
   edge [
     source 14
-    target 6
-    weight 0.833333333333
+    target 15
+    weight 1.0
   ]
   edge [
     source 14
     target 17
-    weight 0.166666666667
+    weight 0.454545454545
   ]
   edge [
     source 15
-    target 2
-    weight 0.5
+    target 1
+    weight 1.0
   ]
   edge [
     source 16
@@ -194,12 +194,12 @@ graph [
   ]
   edge [
     source 17
-    target 11
+    target 7
     weight 1.0
   ]
   edge [
     source 17
-    target 7
+    target 11
     weight 1.0
   ]
 ]

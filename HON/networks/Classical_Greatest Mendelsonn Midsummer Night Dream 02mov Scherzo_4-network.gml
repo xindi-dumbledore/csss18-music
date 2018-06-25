@@ -2,69 +2,54 @@ graph [
   directed 1
   node [
     id 0
-    label "57|"
+    label "-2|"
   ]
   node [
     id 1
-    label "128|58"
+    label "128|-9"
   ]
   node [
     id 2
-    label "128|"
+    label "-9|"
   ]
   node [
     id 3
-    label "58|"
+    label "-17|"
   ]
   node [
     id 4
-    label "128|62"
+    label "-5|"
   ]
   node [
     id 5
-    label "62|"
+    label "128|-5"
   ]
   node [
     id 6
-    label "50|"
+    label "-10|"
   ]
   node [
     id 7
-    label "65|"
+    label "128|"
   ]
   edge [
     source 0
     target 2
-    weight 0.975609756098
-  ]
-  edge [
-    source 0
-    target 5
-    weight 0.0243902439024
+    weight 1.0
   ]
   edge [
     source 1
-    target 3
+    target 2
     weight 1.0
   ]
   edge [
     source 2
-    target 3
-    weight 0.0196078431373
-  ]
-  edge [
-    source 2
-    target 5
-    weight 0.156862745098
-  ]
-  edge [
-    source 2
-    target 0
-    weight 0.823529411765
+    target 1
+    weight 1.0
   ]
   edge [
     source 3
-    target 1
+    target 4
     weight 1.0
   ]
   edge [
@@ -79,12 +64,27 @@ graph [
   ]
   edge [
     source 6
-    target 5
-    weight 1.0
+    target 4
+    weight 0.0243902439024
+  ]
+  edge [
+    source 6
+    target 7
+    weight 0.975609756098
   ]
   edge [
     source 7
-    target 3
-    weight 1.0
+    target 4
+    weight 0.156862745098
+  ]
+  edge [
+    source 7
+    target 2
+    weight 0.0196078431373
+  ]
+  edge [
+    source 7
+    target 6
+    weight 0.823529411765
   ]
 ]

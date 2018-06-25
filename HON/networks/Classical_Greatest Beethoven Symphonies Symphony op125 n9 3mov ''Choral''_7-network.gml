@@ -6,11 +6,11 @@ graph [
   ]
   node [
     id 1
-    label "53|"
+    label "-17|"
   ]
   node [
     id 2
-    label "46|"
+    label "-24|"
   ]
   edge [
     source 0

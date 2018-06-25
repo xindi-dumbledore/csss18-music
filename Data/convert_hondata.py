@@ -3,19 +3,42 @@ import json
 import csv
 import os
 
+#pitch_map = {'D minor', 'A- major', 'F minor', 'E- major', 'C major', 'E major', 'C# minor', 'C# major', 'F# minor', 'A major', 'B- major', 'A minor', 'G major', 'E- minor', 'B minor', 'F major', 'G minor', 'B- minor', 'D major', 'C minor', 'E minor'}
+
+pitch_map = {
+	'C':	60,
+	'C#':	61,
+	'D':	62,
+	'D#':	63,
+	'E':	64,
+	'F': 	65,
+	'F#':	66,
+	'G':	67,
+	'G#':	68,
+	'A': 	69,
+	'A#':	70,
+	'B':	71,
+	'D-':	61,
+	'E-':	63,
+	'F-':	64,
+	'G-':	66,
+	'A-':	68,
+	'B-':	70 	
+}
+
 def readData(fname, sname):
 	with open(fname, 'r') as f:
 		jdata = json.load(f)
 	
-	#data = {}
-	counter = 1
 	for name in jdata:
-		#data[name] = {}
+		pitch = jdata[name][0].split(' ')[0]
+		pitch = pitch_map[pitch]
+
 		for i in jdata[name][1]:
 			if len(jdata[name][1][i]) > 0:
 				row = jdata[name][1][i]
-				row = [r if isinstance(r, int) else max(r) for r in row]
-				#data[name][i] = row
+				row = [r if isinstance(r, int) else max(r) for r in row]		# In case of multiple notes at same position, select max
+				row = [r - pitch if r < 128 else r for r in row] 				# Convert to relative pitch
 				rows = thresholding(row)
 				if len(rows) > 0:
 					print('Saving : {} {}'.format(name, str(i)))
@@ -23,6 +46,7 @@ def readData(fname, sname):
 					saveData(os.path.join(sname, name.replace('/', ' ') + '_' + i + '.csv'), rows)
 	
 	#return data
+	#print(set(pdata))
 
 
 def thresholding(chords):
@@ -34,11 +58,9 @@ def thresholding(chords):
 
 	chord_str = ' '.join(map(str, chords))
 	chords = chord_str.split('129')
-	#chords = [c.replace('128 128', '128') for c in chords]
-	#chords = [c.replace('128', '') for c in chords]
 	chords = [c.split(' ') for c in chords]
 	chords = [[int(i) for i in c if len(i) > 0] for c in chords]
-	#chord_str = chord_str.replace('128', '')
+	
 	return chords
 
 

@@ -6,15 +6,20 @@ graph [
   ]
   node [
     id 1
-    label "74|"
+    label "7|"
   ]
   node [
     id 2
-    label "76|"
+    label "6|"
   ]
   node [
     id 3
-    label "75|"
+    label "5|"
+  ]
+  edge [
+    source 0
+    target 3
+    weight 0.333333333333
   ]
   edge [
     source 0
@@ -27,12 +32,7 @@ graph [
     weight 0.333333333333
   ]
   edge [
-    source 0
-    target 3
-    weight 0.333333333333
-  ]
-  edge [
-    source 1
+    source 2
     target 0
     weight 1.0
   ]

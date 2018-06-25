@@ -2,29 +2,29 @@ graph [
   directed 1
   node [
     id 0
-    label "65|"
+    label "-5|"
   ]
   node [
     id 1
-    label "63|"
+    label "-8|"
   ]
   node [
     id 2
-    label "62|"
+    label "-7|"
+  ]
+  edge [
+    source 1
+    target 0
+    weight 0.5
   ]
   edge [
     source 1
     target 2
-    weight 1.0
-  ]
-  edge [
-    source 2
-    target 0
     weight 0.5
   ]
   edge [
     source 2
     target 1
-    weight 0.5
+    weight 1.0
   ]
 ]

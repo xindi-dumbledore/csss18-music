@@ -2,39 +2,39 @@ graph [
   directed 1
   node [
     id 0
-    label "33|"
+    label "-34|"
   ]
   node [
     id 1
-    label "44|"
+    label "-40|"
   ]
   node [
     id 2
-    label "21|"
+    label "-36|"
   ]
   node [
     id 3
-    label "49|"
+    label "-17|"
   ]
   node [
     id 4
-    label "51|"
+    label "-12|"
   ]
   node [
     id 5
-    label "25|"
+    label "-19|"
   ]
   node [
     id 6
-    label "41|"
+    label "-28|"
   ]
   node [
     id 7
-    label "27|"
+    label "-10|"
   ]
   node [
     id 8
-    label "42|"
+    label "-20|"
   ]
   edge [
     source 0
@@ -48,27 +48,27 @@ graph [
   ]
   edge [
     source 2
-    target 7
+    target 1
     weight 1.0
   ]
   edge [
-    source 4
-    target 5
+    source 3
+    target 6
     weight 1.0
   ]
   edge [
     source 5
-    target 2
+    target 7
     weight 1.0
   ]
   edge [
     source 6
-    target 3
+    target 5
     weight 1.0
   ]
   edge [
     source 7
-    target 6
+    target 2
     weight 1.0
   ]
   edge [

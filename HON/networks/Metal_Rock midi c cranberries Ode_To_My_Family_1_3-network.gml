@@ -2,11 +2,11 @@ graph [
   directed 1
   node [
     id 0
-    label "59|"
+    label "-5|"
   ]
   node [
     id 1
-    label "57|"
+    label "-3|"
   ]
   edge [
     source 0

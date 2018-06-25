@@ -6,7 +6,7 @@ graph [
   ]
   node [
     id 1
-    label "44|"
+    label "-25|"
   ]
   edge [
     source 0
