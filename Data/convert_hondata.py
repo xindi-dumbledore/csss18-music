@@ -34,16 +34,23 @@ def readData(fname, sname):
 		pitch = jdata[name][0].split(' ')[0]
 		pitch = pitch_map[pitch]
 
+		mrow = []
+
 		for i in jdata[name][1]:
 			if len(jdata[name][1][i]) > 0:
 				row = jdata[name][1][i]
 				row = [r if isinstance(r, int) else max(r) for r in row]		# In case of multiple notes at same position, select max
 				row = [r - pitch if r < 128 else r for r in row] 				# Convert to relative pitch
-				rows = thresholding(row)
-				if len(rows) > 0:
-					print('Saving : {} {}'.format(name, str(i)))
-					print(os.path.join(sname, name.replace('/', ' ') + '_' + i + '.csv'))
-					saveData(os.path.join(sname, name.replace('/', ' ') + '_' + i + '.csv'), rows)
+				
+				# Save only instrumet with most nodes
+				if len(row) > len(mrow):
+					mrow = thresholding(row)
+					#mrow = row
+		if len(mrow) > 0:
+			# Save the row with most notes
+			print('Saving : {} {}'.format(name, str(i)))
+			print(os.path.join(sname, name.replace('/', ' ') + '_.csv'))
+			saveData(os.path.join(sname, name.replace('/', ' ') + '_.csv'), mrow)
 	
 	#return data
 	#print(set(pdata))
