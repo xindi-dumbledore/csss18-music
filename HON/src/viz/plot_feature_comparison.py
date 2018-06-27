@@ -62,6 +62,6 @@ if __name__ == '__main__':
 	#wabruptness = [folk['weighted_abruptness'], rock['weighted_abruptness'], classic['weighted_abruptness'], jazz['weighted_abruptness'], pop['weighted_abruptness']]
 
 
-	plotDistribution(data, 'melodic_mean', 'Melodic (Mean)', False)
+	plotDistribution(data, 'melodic_variance', 'Pitch (Rules)', True)
 	#plotDistribution(uabruptness, names, 'Unweighted Abruptness', True)
 	#plotDistribution(wabruptness, names, 'Weighted Abruptness', True)
