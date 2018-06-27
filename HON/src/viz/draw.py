@@ -54,7 +54,7 @@ def drawGraph(graph, dirname, fname):
 	f = '{}{}'.format(fname[:-3], 'pdf')
 	sname = os.path.join(dirname, f )
 
-	nx.draw(graph, arrowsize=5, arrows=True, arrowstyle='-|>', node_size=nsize, width=esize, edge_color='gray', node_color='red', with_labels=True, font_size=1)
+	nx.draw(graph, arrowsize=5, arrows=True, arrowstyle='-|>', node_size=nsize, width=esize, edge_color='gray', node_color='red', with_labels=True, font_size=5)
 	plt.figure(1,figsize=(20,20)) 
 	plt.savefig(sname, bbox_inches='tight', dpi=1000)
 	plt.clf()
@@ -79,7 +79,7 @@ if __name__ == '__main__':
 		if len(edges) == 0:
 			continue
 		graph = generateGraph(edges)
-		#idrawGraph(graph, output_dirname, f)
+		drawGraph(graph, output_dirname, f)
 		saveGML(graph, gml_dirname, f)
 
 
