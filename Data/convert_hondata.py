@@ -39,9 +39,10 @@ def readData(fname, sname):
 		for i in jdata[name][1]:
 			if len(jdata[name][1][i]) > 0:
 				row = jdata[name][1][i]
-				row = [r if isinstance(r, int) else max(r) for r in row]		# In case of multiple notes at same position, select max
+				row = [int(r) if isinstance(r, int) else max(r) for r in row]		# In case of multiple notes at same position, select max
+				row = [r for r in row if r != 128] 								# Remove pause
 				row = [r - pitch if r < 128 else r for r in row] 				# Convert to relative pitch
-				
+				print(row)
 				# Save only instrumet with most nodes
 				if len(row) > len(mrow):
 					mrow = thresholding(row)
@@ -50,7 +51,7 @@ def readData(fname, sname):
 			# Save the row with most notes
 			print('Saving : {} {}'.format(name, str(i)))
 			print(os.path.join(sname, name.replace('/', ' ') + '_.csv'))
-			saveData(os.path.join(sname, name.replace('/', ' ') + '_.csv'), mrow)
+			saveData(os.path.join(sname, 'Pop '+name.replace('/', ' ') + '_.csv'), mrow)
 	
 	#return data
 	#print(set(pdata))

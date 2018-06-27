@@ -148,20 +148,32 @@ def saveData(sname, data):
 if __name__ == '__main__':
     dirname = sys.argv[1]			# GML dirname
     sname = sys.argv[2]				# Save file name
-    musictype = sys.argv[3] 		# Music Type
+    musictype = sys.argv[3] 		# Music Type / Genre
 
     data = {}
     data['unweighted_abruptness'] = []
     data['weighted_abruptness'] = []
-    data['branchiness'] = []
+    data['branchiness_mean'] = []
+    data['branchiness_variance'] = []
+    data['repeteadness_mean'] = []
+    data['repeteadness_variance'] = []
+    data['melodic_mean'] = []
+    data['melodic_variance'] = []
+    data['pitch_in_piece'] = []
+    data['pitch_in_rules'] = []
 
     for f in getFileName(dirname, musictype):
-        print(f)
+        print('Processing: {}'.format(f))
+
         graph = getGMLNetwork(os.path.join(dirname, f))
 
         d0, d1 = getAbruptness(graph)
         d2 = getBranchisess(graph, 0.1)
+        d3 = getRepeatedness(graph, 0.75)
+        d4 = getMelodic(graph)
+        d5, d6 = getPitchRange(graph)
 
+        #print(d4)
         # print(d0)
         #data['unweighted_abruptness'] += d0
         # print(data['unweighted_abruptness'])
@@ -170,6 +182,13 @@ if __name__ == '__main__':
 
         data['unweighted_abruptness'].append(np.percentile(d0, 95))
         data['weighted_abruptness'].append(np.percentile(d1, 95))
-        data['branchiness'].append(np.mean(d2))
+        data['branchiness_mean'].append(np.mean(d2))
+        data['branchiness_variance'].append(np.var(d2))
+        data['repeteadness_mean'].append(np.mean(d3.values()))
+        data['repeteadness_variance'].append(np.var(d3.values()))
+        data['melodic_mean'].append(np.mean(d4))
+        data['melodic_variance'].append(np.var(d4))
+        data['pitch_in_rules'].append(np.mean(d5))
+        data['pitch_in_piece'].append(d6)
 
     saveData(sname, data)
