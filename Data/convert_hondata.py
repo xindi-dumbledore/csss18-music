@@ -41,18 +41,18 @@ def readData(fname, sname):
 				row = jdata[name][1][i]
 				row = [int(r) if isinstance(r, int) else max(r) for r in row]		# In case of multiple notes at same position, select max
 				row = [r for r in row if r != 128] 								# Remove pause
-				#row = [r - pitch if r < 128 else r for r in row] 				# Convert to relative pitch
+				row = [r - pitch if r < 128 else r for r in row] 				# Convert to relative pitch
 				#mrow = row
 				#print(row)
 				# Save only instrumet with most nodes
-				#if len(row) > len(mrow):
-				mrow = thresholding(row)
+				if len(row) > len(mrow):
+					mrow = thresholding(row)
 					#mrow = row
-		#if len(mrow) > 0:
-			# Save the row with most notes
-				print('Saving : {} {}'.format(name, str(i)))
-				#print(os.path.join(sname, name.replace('/', ' ') + '_.csv'))
-				saveData(os.path.join(sname, name.replace('/', ' ') + '_' + str(i) +' .csv'), mrow)
+		if len(mrow) > 0:
+		# Save the row with most notes
+			print('Saving : {} {}'.format(name, str(i)))
+			#print(os.path.join(sname, name.replace('/', ' ') + '_.csv'))
+			saveData(os.path.join(sname, name.replace('/', ' ') + '_' + str(i) +' .csv'), mrow)
 	
 	#return data
 	#print(set(pdata))
