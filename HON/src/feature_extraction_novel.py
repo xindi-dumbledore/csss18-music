@@ -26,6 +26,19 @@ def getGMLNetwork(fname):
     return nx.read_gml(fname)
 
 
+def getPitchesGivenRules(rule):
+    # this is a helper function
+    # Get the pitches based on the rules
+    current_node = rule.split('|')[0]
+    previous_nodes = rule.split('|')[1].split('.')
+    if previous_nodes == ['']:
+        pitches = [int(current_node)]
+    else:
+        pitches = [int(current_node)] + list(map(int, previous_nodes))
+    pitches = list(filter(lambda x: x != 128, pitches))
+    return pitches
+
+
 def getAbruptness(graph):
     """
     Edges with high betweeness but low transition prob
@@ -111,12 +124,7 @@ def getPitchRange(graph):
     nodes = list(graph.nodes())
     pitch_in_rules = []
     for node in nodes:
-        current_node = node.split('|')[0]
-        previous_nodes = node.split('|')[1].split('.')
-        if previous_nodes == ['']:
-            pitches = [int(current_node)]
-        else:
-            pitches = [int(current_node)] + list(map(int, previous_nodes))
+        pitches = getPitchesGivenRules(node)
         pitch_in_rules.append(pitches)
     pitch_range_in_rules = []
     for pitches in pitch_in_rules:
@@ -124,6 +132,28 @@ def getPitchRange(graph):
     pitches_in_piece = list(itertools.chain(*pitch_in_rules))
     pitch_range_of_piece = max(pitches_in_piece) - min(pitches_in_piece)
     return pitch_range_in_rules, pitch_range_of_piece
+
+
+def getPitchChangeBetweenRules(graph, tau=0.75):
+    edges = [(e[0], e[1])
+             for e in graph.edges(data=True) if e[2]['weight'] > tau]
+    edge_weight = nx.get_edge_attributes(graph, "weight")
+    sg = nx.DiGraph()
+    sg.add_edges_from(edges)
+    nx.set_edge_attributes(sg, edge_weight, "weight")
+    pitch_difference_between_rules = []
+    for edge in sg.edges():
+        rule_1 = edge[0]
+        rule_2 = edge[1]
+        pitches_rule1 = getPitchesGivenRules(rule_1)
+        pitches_rule2 = getPitchesGivenRules(rule_2)
+        try:
+            pitch_difference = max(abs(max(pitches_rule1) - min(pitches_rule2)),
+                                   abs(max(pitches_rule2) - min(pitches_rule1)))
+        except:
+            continue
+        pitch_difference_between_rules.append(pitch_difference)
+    return pitch_difference_between_rules
 
 
 def saveData(sname, data):
@@ -161,6 +191,7 @@ if __name__ == '__main__':
     data['melodic_variance'] = []
     data['pitch_in_piece'] = []
     data['pitch_in_rules'] = []
+    data['pitch_between_rules'] = []
 
     for f in getFileName(dirname, musictype):
         print('Processing: {}'.format(f))
@@ -172,8 +203,9 @@ if __name__ == '__main__':
         d3 = getRepeatedness(graph, 0.75)
         d4 = getMelodic(graph)
         d5, d6 = getPitchRange(graph)
+        d7 = getPitchChangeBetweenRules(graph, 0.75)
 
-        #print(d4)
+        # print(d4)
         # print(d0)
         #data['unweighted_abruptness'] += d0
         # print(data['unweighted_abruptness'])
@@ -190,5 +222,6 @@ if __name__ == '__main__':
         data['melodic_variance'].append(np.var(d4))
         data['pitch_in_rules'].append(np.mean(d5))
         data['pitch_in_piece'].append(d6)
+        data['pitch_between_rules'].append(d7)
 
     saveData(sname, data)
