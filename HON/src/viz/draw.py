@@ -79,7 +79,7 @@ if __name__ == '__main__':
 		if len(edges) == 0:
 			continue
 		graph = generateGraph(edges)
-		drawGraph(graph, output_dirname, f)
+		#drawGraph(graph, output_dirname, f)
 		saveGML(graph, gml_dirname, f)
 
 
