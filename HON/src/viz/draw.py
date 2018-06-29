@@ -59,6 +59,7 @@ def drawGraph(graph, dirname, fname):
 	plt.savefig(sname, bbox_inches='tight', dpi=1000)
 	plt.clf()
 
+
 def saveGML(graph, dirname, fname):
 	f = '{}{}'.format(fname[:-3], 'gml')
 	sname = os.path.join(dirname, f )

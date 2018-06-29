@@ -23,6 +23,7 @@ def drawGraph(graph, dirname, fname):
 	plt.savefig(sname, bbox_inches='tight', dpi=1000)
 	plt.clf()
 
+
 def nodeSize(graph):
 	# Node size by pagerank
 	pr = nx.pagerank_numpy(graph, weight='weight')

@@ -11,6 +11,19 @@ import os
 import csv
 import numpy as np
 
+# ----- Part to set timeout if something takes too long
+import signal
+
+class TimeoutException(Exception):   # Custom exception class
+    pass
+
+def timeout_handler(signum, frame):   # Custom signal handler
+    raise TimeoutException
+
+# Change the behavior of SIGALRM
+signal.signal(signal.SIGALRM, timeout_handler)
+# ---- Part to set timeout if something takes too long
+
 
 def getFileName(dirname, musictype):
     fnames = [f for f in os.listdir(
@@ -196,32 +209,44 @@ if __name__ == '__main__':
     for f in getFileName(dirname, musictype):
         print('Processing: {}'.format(f))
 
-        graph = getGMLNetwork(os.path.join(dirname, f))
+        try:
+            signal.alarm(30)
 
-        d0, d1 = getAbruptness(graph)
-        d2 = getBranchisess(graph, 0.1)
-        d3 = getRepeatedness(graph, 0.75)
-        d4 = getMelodic(graph)
-        d5, d6 = getPitchRange(graph)
-        d7 = getPitchChangeBetweenRules(graph, 0.75)
+            # If a particular file takes too long , skip it
+            graph = getGMLNetwork(os.path.join(dirname, f))
 
-        # print(d4)
-        # print(d0)
-        #data['unweighted_abruptness'] += d0
-        # print(data['unweighted_abruptness'])
-        #data['weighted_abruptness'] += d1
-        #data['branchiness'] += d2
+            d0, d1 = getAbruptness(graph)
+            d2 = getBranchisess(graph, 0.1)
+            d3 = getRepeatedness(graph, 0.75)
+            d4 = getMelodic(graph)
+            d5, d6 = getPitchRange(graph)
+            d7 = getPitchChangeBetweenRules(graph, 0.75)
 
-        data['unweighted_abruptness'].append(np.percentile(d0, 95))
-        data['weighted_abruptness'].append(np.percentile(d1, 95))
-        data['branchiness_mean'].append(np.mean(d2))
-        data['branchiness_variance'].append(np.var(d2))
-        data['repeteadness_mean'].append(np.mean(d3.values()))
-        data['repeteadness_variance'].append(np.var(d3.values()))
-        data['melodic_mean'].append(np.mean(d4))
-        data['melodic_variance'].append(np.var(d4))
-        data['pitch_in_rules'].append(np.mean(d5))
-        data['pitch_in_piece'].append(d6)
-        data['pitch_between_rules'].append(d7)
+            # print(d4)
+            # print(d0)
+            #data['unweighted_abruptness'] += d0
+            # print(data['unweighted_abruptness'])
+            #data['weighted_abruptness'] += d1
+            #data['branchiness'] += d2
+
+            data['unweighted_abruptness'].append(np.percentile(d0, 95))
+            data['weighted_abruptness'].append(np.percentile(d1, 95))
+            data['branchiness_mean'].append(np.mean(d2))
+            data['branchiness_variance'].append(np.var(d2))
+            data['repeteadness_mean'].append(np.mean(d3.values()))
+            data['repeteadness_variance'].append(np.var(d3.values()))
+            data['melodic_mean'].append(np.mean(d4))
+            data['melodic_variance'].append(np.var(d4))
+            data['pitch_in_rules'].append(np.mean(d5))
+            data['pitch_in_piece'].append(d6)
+            data['pitch_between_rules'].append(d7)
+        except TimeoutException:
+            # handle the exception
+            signal.alarm(0)
+            print('Timeout')
+            continue # continue the for loop if function A takes more than 10 second
+        else:
+            # Reset the alarm
+            signal.alarm(0)
 
     saveData(sname, data)
