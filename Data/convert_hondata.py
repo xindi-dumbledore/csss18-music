@@ -50,7 +50,10 @@ def readData(fname, sname):
 					#mrow = row
 		if len(mrow) > 0:
 		# Save the row with most notes
-			print('Saving : {} {}'.format(name, str(i)))
+			try:
+				print('Saving : {} {}'.format(name, str(i)))
+			except:
+				print('Saving')
 			#print(os.path.join(sname, name.replace('/', ' ') + '_.csv'))
 			saveData(os.path.join(sname, name.replace('/', ' ') + '_' + str(i) +' .csv'), mrow)
 	

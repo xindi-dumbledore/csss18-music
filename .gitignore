@@ -2,8 +2,9 @@ venv/*
 *.pyc
 .RData
 .Rhistory
-
-
 Data/midi_corpus_jazz_5.json
-
 Data/midi_corpus_larger.json
+HON/edges_rules_larger/*
+HON/network_larger/*
+HON/viz_output_larger/*
+Data/hon_data_larger/*

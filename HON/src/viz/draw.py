@@ -59,6 +59,7 @@ def drawGraph(graph, dirname, fname):
 	plt.savefig(sname, bbox_inches='tight', dpi=1000)
 	plt.clf()
 
+
 def saveGML(graph, dirname, fname):
 	f = '{}{}'.format(fname[:-3], 'gml')
 	sname = os.path.join(dirname, f )
@@ -79,7 +80,7 @@ if __name__ == '__main__':
 		if len(edges) == 0:
 			continue
 		graph = generateGraph(edges)
-		drawGraph(graph, output_dirname, f)
+		#drawGraph(graph, output_dirname, f)
 		saveGML(graph, gml_dirname, f)
 
 

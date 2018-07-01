@@ -80,7 +80,7 @@ def ReadSequentialData(InputFileName):
                 continue
 
             RawTrajectories.append([ship, movements])
-    print(RawTrajectories)
+    #print(RawTrajectories)
     print('trajectory',len(RawTrajectories))
     return RawTrajectories
 
