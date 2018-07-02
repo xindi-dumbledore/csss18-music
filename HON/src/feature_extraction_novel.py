@@ -210,7 +210,7 @@ if __name__ == '__main__':
         print('Processing: {}'.format(f))
 
         try:
-            signal.alarm(30)
+            signal.alarm(60)
 
             # If a particular file takes too long , skip it
             graph = getGMLNetwork(os.path.join(dirname, f))
