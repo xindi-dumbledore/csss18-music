@@ -35,6 +35,7 @@ if __name__ == '__main__':
 
 	for f in getFileName(inputDir):
 		fname = os.path.join(inputDir, f)
+		print('Files: {}'.format(fname))
 		g = readGraph(fname)
 		g = normalizeEdgeWeight(g)
 		saveNetwork(g, fname)
