@@ -233,7 +233,7 @@ if __name__ == '__main__':
             data['weighted_abruptness'].append(np.percentile(d1, 95))
             data['branchiness_mean'].append(np.mean(d2))
             data['branchiness_variance'].append(np.var(d2))
-            data['repeteadness_mean'].append(np.mean(d3.values()))
+            data['repeteadness_mean'].append(np.percentile(d3.values(), 95))
             data['repeteadness_variance'].append(np.var(d3.values()))
             data['melodic_mean'].append(np.mean(d4))
             data['melodic_variance'].append(np.var(d4))
