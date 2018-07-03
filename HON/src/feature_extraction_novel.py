@@ -10,6 +10,7 @@ from pprint import pprint
 import os
 import csv
 import numpy as np
+import operator
 
 # ----- Part to set timeout if something takes too long
 import signal
@@ -73,7 +74,28 @@ def getAbruptness(graph):
         weighted_abruptness[(edge[0], edge[1])] = weighted_edge_betweeness[
             (edge[0], edge[1])] / edge[2]['weight']
 
-    return unweighted_abruptness.values(), weighted_abruptness.values()
+    # Get edge highest abruptness
+    weighted_highest = sorted(weighted_abruptness, key=weighted_abruptness.get)[-int(0.95*len(weighted_abruptness))]
+    unweighted_highest = sorted(unweighted_abruptness, key=unweighted_abruptness.get)[-int(0.95*len(unweighted_abruptness))]
+    
+    w_rule_1 = weighted_highest[0]
+    w_rule_2 = weighted_highest[1]
+    w_pitches_rule1 = getPitchesGivenRules(w_rule_1)
+    w_pitches_rule2 = getPitchesGivenRules(w_rule_2)
+    w_pitch_difference = max(abs(max(w_pitches_rule1) - min(w_pitches_rule2)),
+                        abs(max(w_pitches_rule2) - min(w_pitches_rule1)))
+
+
+    u_rule_1 = unweighted_highest[0]
+    u_rule_2 = unweighted_highest[1]
+    u_pitches_rule1 = getPitchesGivenRules(u_rule_1)
+    u_pitches_rule2 = getPitchesGivenRules(u_rule_2)
+    u_pitch_difference = max(abs(max(u_pitches_rule1) - min(u_pitches_rule2)),
+                                   abs(max(u_pitches_rule2) - min(u_pitches_rule1)))
+    
+        
+
+    return u_pitch_difference, w_pitch_difference
 
 
 def getBranchisess(graph, tau=0.1):
@@ -229,11 +251,14 @@ if __name__ == '__main__':
             #data['weighted_abruptness'] += d1
             #data['branchiness'] += d2
 
-            data['unweighted_abruptness'].append(np.percentile(d0, 95))
-            data['weighted_abruptness'].append(np.percentile(d1, 95))
+            data['unweighted_abruptness'].append(d0)
+            data['weighted_abruptness'].append(d1)
             data['branchiness_mean'].append(np.mean(d2))
             data['branchiness_variance'].append(np.var(d2))
-            data['repeteadness_mean'].append(np.percentile(d3.values(), 95))
+            if len(d3) > 1:
+                data['repeteadness_mean'].append(np.percentile(d3.values(), 95))
+            else:
+                data['repeteadness_mean'].append(0)
             data['repeteadness_variance'].append(np.var(d3.values()))
             data['melodic_mean'].append(np.mean(d4))
             data['melodic_variance'].append(np.var(d4))

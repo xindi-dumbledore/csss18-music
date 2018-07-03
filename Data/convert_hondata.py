@@ -30,7 +30,10 @@ def readData(fname, sname):
 	with open(fname, 'r') as f:
 		jdata = json.load(f)
 	
+	songs = ["Beatles beatles-yesterday", "Beatles Beatles_Blackbird", "Beatles Beatles_Eleanor_Rigby"]
+
 	for name in jdata:
+	#for name in songs:
 		pitch = jdata[name][0].split(' ')[0]
 		pitch = pitch_map[pitch]
 
@@ -47,9 +50,9 @@ def readData(fname, sname):
 				# Save only instrumet with most nodes
 				if len(row) > len(mrow):
 					mrow = thresholding(row)
-					#mrow = row
+					mrow = row
 		if len(mrow) > 0:
-		# Save the row with most notes
+			# Save the row with most notes
 			try:
 				print('Saving : {} {}'.format(name, str(i)))
 			except:
