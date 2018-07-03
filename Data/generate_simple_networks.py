@@ -28,4 +28,4 @@ for each_piece in songs:
 		graph = nx.DiGraph()
 		graph.add_weighted_edges_from(edges_with_weight)
 
-		nx.write_gml(graph, "{}-{}{}".format(sname, each_piece, '.gml'))
+		nx.write_gml(graph, "{}-{}-{}{}".format(sname, each_piece, each_part, '.gml'))
