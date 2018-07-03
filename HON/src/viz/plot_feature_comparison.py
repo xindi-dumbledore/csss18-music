@@ -38,7 +38,7 @@ def readFeature(fname):
     return data
 
 
-def plotDistribution(data, dtype, xname, sname, log=False):
+def plotDistribution(data, dtype, xname, sname, log=False, mean = True):
     plt.clf()
     plt.figure(figsize=(20, 20))
     names = list(data.keys())
@@ -52,12 +52,14 @@ def plotDistribution(data, dtype, xname, sname, log=False):
         m = np.mean(pdata[i])
         sns.distplot(pdata[i], kde_kws={"lw": 1, "label": names[
                      i]}, hist=False, rug=False, kde=True, ax=ax, color=sns.color_palette()[i])
-        plt.vlines(m, ymin=0, ymax=3, lw=1.5,
-                   color=sns.color_palette()[i], linestyles="--")
+        if mean:
+            plt.vlines(m, ymin=0, ymax=3, lw=1.5,
+                       color=sns.color_palette()[i], linestyles="--")
     ax.set(xlabel=xname, ylabel='KDE')
     if log:
         plt.xscale('log')
     # plt.show()
+    plt.legend(loc=1)
 
     plt.savefig(sname, dpi=1000, bbox_inches='tight')
     # plt.clf()
@@ -88,10 +90,10 @@ if __name__ == '__main__':
     plotDistribution(data, 'branchiness_mean', 'Branchiness (Mean)',
                      "../../feature_comparison/branchiness.pdf", False)
     plotDistribution(data, 'weighted_abruptness', 'Weighted Abruptness',
-                     "../../feature_comparison/weighted_abruptness.pdf", True)
+                     "../../feature_comparison/weighted_abruptness.pdf", False)
     plotDistribution(data, 'unweighted_abruptness', 'Unweighted Abruptness',
-                     "../../feature_comparison/unweighted_abruptness.pdf", True)
+                     "../../feature_comparison/unweighted_abruptness.pdf", False)
     plotDistribution(data, 'melodic_mean', 'Melodic (Mean)',
-                     "../../feature_comparison/melodic_mean.pdf", False)
+                     "../../feature_comparison/melodic_mean.pdf", False, mean = False)
     #plotDistribution(uabruptness, names, 'Unweighted Abruptness', True)
     #plotDistribution(wabruptness, names, 'Weighted Abruptness', True)
