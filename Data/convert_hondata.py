@@ -30,7 +30,7 @@ def readData(fname, sname):
 	with open(fname, 'r') as f:
 		jdata = json.load(f)
 	
-	songs = ["Beatles beatles-yesterday", "Beatles Beatles_Blackbird", "Beatles Beatles_Eleanor_Rigby"]
+	songs = ["Beatles Beatles_Yesterday", "Beatles Beatles_Blackbird", "Beatles Beatles_Eleanor_Rigby"]
 
 	for name in jdata:
 	#for name in songs:
