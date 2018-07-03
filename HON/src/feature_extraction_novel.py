@@ -264,7 +264,7 @@ if __name__ == '__main__':
             data['melodic_variance'].append(np.var(d4))
             data['pitch_in_rules'].append(np.mean(d5))
             data['pitch_in_piece'].append(d6)
-            data['pitch_between_rules'].append(d7)
+            data['pitch_between_rules'].append(np.mean(d7))
         except TimeoutException:
             # handle the exception
             signal.alarm(0)
