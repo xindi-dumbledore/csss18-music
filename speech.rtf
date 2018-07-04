@@ -6,10 +6,10 @@
 \deftab720
 \pard\pardeftab720\partightenfactor0
 
-\f0\fs22 \cf2 \expnd0\expndtw0\kerning0
+\f0\fs28 \cf2 \expnd0\expndtw0\kerning0
 Hello everyone, our project is understanding music with higher order network we are the music understanding group. \
 \
-Our general question is whether we can use machine to understand how music is composed and structured, and further understand what makes music different between music eras, genres, and composers.\
+Our general question is whether we can use machines to understand how music is composed and structured, and further understand what makes music different between music eras, genres, and composers.\
 \
 The data we are using is from \'93The largest MIDI collection on the Internet\'94 from a Reddit post. In MIDI coding, there are in total 128 coding for the 12 notes across 11 octaves. However, if a music piece is just performed under a different key, it should be regarded as the same piece. Therefore, we use a python package music21 to detect the key of the piece and set the tonal note as a base, re index each note relative to the base note. \
 \
@@ -17,7 +17,7 @@ The framework we are using is the Higher Order Network, first introduced by Xu e
 \
 We came up with some features from the higher order network that we think may capture some characteristics of the music. We have abruptness, branching and melodic.\
 \
-Abruptness capture whether there are dramatic change in the music piece. What we do is to find edges that have high betweenness centrality but low transition probability, and look at the pitch difference between the two end node of this edge. What we found is that Jazz, pop and rock are more abrupt than american folk and classical music.\
+Abruptness capture whether there are dramatic change in the music piece. What we do is, after removing edges with very low transition probabilities, find edges that have high betweenness centrality but low transition probability. We then, look at the pitch difference between the two end node of this edge. What we found is that Jazz, pop and rock are more abrupt than american folk and classical music.\
 \
 Branching sort of capture how complex the music is. If the network is more chainly, the music will sound more smooth and probably more memorable. If the network have more branches, there will be more variation in the music piece. To measure this, we simply take the average degree of the network. We observe that classical music have more branches, followed by american folk. Jazz is somewhat in between; rock and pop tend to be more \'93chainly\'94.\
 \
