@@ -2,18 +2,24 @@
 {\fonttbl\f0\fnil\fcharset0 HelveticaNeue;}
 {\colortbl;\red255\green255\blue255;\red0\green0\blue0;}
 {\*\expandedcolortbl;;\cssrgb\c0\c0\c0;}
-\margl1440\margr1440\vieww10800\viewh15200\viewkind0
+\margl1440\margr1440\vieww9360\viewh21000\viewkind0
 \deftab720
 \pard\pardeftab720\partightenfactor0
 
 \f0\fs28 \cf2 \expnd0\expndtw0\kerning0
-Hello everyone, the project we are presenting is understanding music with higher order network.\
+<Xindi>\
 \
-Our general question is whether we can use machine to understand how music is composed and structured, and further understand what makes music different between music eras, genres, and composers.\
+Hello everyone, our project is understanding music with higher order network we are the music understanding group. \
 \
-The data we are using is \'93The largest MIDI collection on the Internet\'94 from a Reddit post. In MIDI coding, there are in total 128 codes for 12 notes across 11 octaves. However, if a music piece is performed under a different key, it should be regarded as the same piece. Therefore, we use a python package music21 to detect the tonal note and re-index each note relative to the tonal note. For example, for the snippet twinkle twinkle little star, we have the original coding as 60, 60, 67, etc., and after reindex it we end up having the sequence as 0, 0, 7, etc.\
+Our general question is whether we can use machines to understand how music is composed and structured, and further understand what makes music different between music eras, genres, and composers.\
 \
-The framework we are using is Higher Order Network. Given a piece of music, if we form a simple network, we would simply connect two adjacent notes together and weight the edges if that note pair happens multiple times. However, under this setting, we are losing the \'93memory\'94 in the music, which may be very important. Instead, higher order network will keep the memory information. For example, for a two order network, we would preserve one step back information and end up with a chain. However, this setting will become very complex when we have 3rd, 4th, 5th order. Here we use the higher order network algorithm by Xu et al, where they would automatically extract the rules with different orders, and end up with a network containing several different orders. In this network, rules will become nodes, and edges connecting them denotes the transition probability between different rules.\
+The data we are using is from \'93The largest MIDI collection on the Internet\'94 from a Reddit post. In MIDI coding, there are in total 128 coding for the 12 notes across 11 octaves. However, if a music piece is just performed under a different key, it should be regarded as the same piece. Therefore, we use a python package music21 to detect the key of the piece and set the tonal note as a base, re index each note relative to the base note. \
+\
+The framework we are using is the Higher Order Network, first introduced by Xu et al in 2016. Given this snippet of \'93twinkle twinkle little stars\'94, if we form a simple network, we would simply connect two adjacent notes together and weight the edges if that note pair encounter multiple times. However, under this setting, we are losing the \'93memory\'94 in the music, which may be very important. Instead, higher order network will keep the memory information. For example, for a two order network, we would preserve one step back information and end up with a chain. However, this setting will become very complex when we have 3rd, 4rd, 5th order. However, in Xu et al\'92s algorithm, they would extract the rules with different orders automatically, so we would end up with a network containing several different orders. In this network, rules will become nodes, and edges connecting them denotes the transition probability between different rules.\
+\
+</Xindi>\
+\
+<Ricky>\
 \
 We came up with some features from the higher order network that we think may capture some characteristics of the music. We have abruptness, branching and melodic.\
 \
@@ -24,6 +30,8 @@ Branching sort of capture how complex the music is. If the network is more chain
 Melodic capture whether there are a clear melody line that occurs a lot of times. We expect that if there is a melody line that repeats a lot of times, we would observe them in the extracted rules. For this, we simply take the length of extracted rules and see the distribution of this number for different pieces. Interestingly, we observe bimodal distribution for most of the genres, which suggests that the melodic is hybrid within most genres: we have pieces that have a long and clear melody and some pieces that don\'92t.\
 \
 After extracting features, we tried a little reverse engineering to see whether we can predict the piece genre from the extracting features. Here we use the multilayer perceptron as the classifer and try to classify classical vs american folk and rock vs jazz.\
+\
+</Ricky>\
 \
 Just to give more context, let\'92s look at a case study of XXX\
 \
