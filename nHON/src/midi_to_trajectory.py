@@ -61,39 +61,32 @@ def readData(fname):
 
 		# Merge consecutive identical notes
 		# Note: Optimize this 
-		l_max = len(mrow)
-		l = l_max
-		while l > 1:
-			if l > len(mrow):
-				continue
-
-			dups = []
-			for i in range(0, len(mrow)-l+1):
-				if len(set(mrow[i:i+l])) == 1:
-					dups = list(range(i,i+l))
-
-					trow[min(dups) + 1] = sum(trow[min(dups):max(dups) + 1]) 			# sum all the time for nodes about to be removed
-					for r in sorted(dups, reverse=True):
-						if r == max(dups):
-							continue
-						mrow.pop(r)
-						trow.pop(r)
-
+		"""
+		while True:
+			dups = False
+			for i in range(0, len(mrow)-2):
+				if mrow[i] == mrow[i+1]:
+					dups = True
+					mrow.pop(i+1)
+					trow[i] += trow[i+1]
+					trow.pop(i+1)
 					break
-			
-			if len(dups) == 0:
-				l -= 1
+			if not dups:
+				break
+		"""
 
 		# round the time
-		trow = [round(v,2) for v in trow]
+		trow = [round(v,1) for v in trow]
 
 		# Filter out notes wih 0 interval
+		"""
 		traj = []
 		for i in range(0, len(mrow)):
-			if trow[i] > 0:
-				traj.append('{}_{}'.format(mrow[i], trow[i]))
-
+			traj.append('{}_{}'.format(mrow[i], trow[i]))
+			
 		trajectories.append(traj)
+		"""
+		trajectories.append(mrow)
 
 		print('Processed: {}'.format(name))
 
