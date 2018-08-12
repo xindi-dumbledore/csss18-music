@@ -1,0 +1,123 @@
+\documentclass[]{article}
+
+\usepackage{amsmath,amssymb,amsfonts}
+
+%opening
+\title{HON}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+
+\end{abstract}
+
+\section{Trajectory}
+Here are some thoughts I had about the way we handle trajectories.
+
+\texttt{\$ python3 nHON\textbackslash src\textbackslash midi\_to\_trajectory.py <midi\_corupus\_file> <save\_file>}
+
+\subsection{Single Musical Piece}
+In the earlier implementation we split each musical pieces into multiple trajectories separated by \texttt{129}. A potential problem with this is that we are forcing independence between the trajectories in the same musical piece. 
+
+As an alternative, we can keep a musical piece as one trajectory, and \texttt{129} as another ``note''. We can then let HON handle the if there are dependencies are not. This is how it is handled in the script \texttt{midi\_to\_trajectory.py}.
+
+\subsection{Multiple Musical Piece}
+In the earlier implementation, different musical pieces are considered as completely separate. When we construct the \texttt{HON}, we construct them separately. This is helpful in understanding the structure of individual musical pieces.
+
+In this approach, to understand the structure of a group of pieces (for example same genre, or same composer), we need to extract features from the multiple \texttt{HON}s and do some form of aggregation.
+
+In the current implementation, different musical pieces are considered as separate trajectories but in the same trajectory file. When we construct the \textit{HON} the different trajectories in the same file are in the same \textit{HON}.
+
+So, we have one \textit{HON} for, say, an genre. If we want to compare different genre we can compare the \textit{HON}s for these genre as simple graph comparison.
+
+\section{Higher Order Network}
+
+Let us represent a higher order rule $u_i \rightarrow u_{i+1}$ with priors $u_{i-l}, u_{i-l+1}, \ldots, u_{i-1}$ with,
+\[
+u_{i\vert l} \rightarrow u_{i+1}
+\]
+
+The \textit{support} of $u_{i\vert l} \rightarrow u_{i+1}$ is the number of times it is observed in the dataset. And it is represented by $\mathcal{S}\left(u_{i\vert l} \rightarrow u_{i+1}\right)$.
+
+The \textit{confidence} of $u_{i\vert l} \rightarrow u_{i+1}$ is the ration,
+\[
+\mathcal{C}\left(u_{i\vert l} \rightarrow u_{i+1}\right) = \frac{\mathcal{S}\left(u_{i\vert l} \rightarrow u_{i+1}\right)}{\mathcal{S}\left(u_{i\vert l} \rightarrow \ast\right)}
+\]
+where $\ast$ is any node.
+
+In the current implementation of \texttt{hon.py}, there are two parameters -- \textit{min\_support} ($S_m$) and \textit{delta\_confidence} ($C_\delta$). In the original implementation of \textit{HON}, $S_m$ is the only parameter.
+
+A rule $u_{i\vert l} \rightarrow u_{i+1}$ is considered for inclusion in the \textit{HON} if
+\[
+\mathcal{S}\left(u_{i\vert l} \rightarrow u_{i+1}\right) \ge S_m
+\]
+
+A higher order rule $u_{i\vert l} \rightarrow u_{i+1}$ is included in the \textit{HON} only if the difference in confidence on adding more priors changes the confidence by atleast $C_\delta$. 
+
+Suppose $u_{i\vert l-k} \rightarrow u_{i+1}$ is the longest rule of the form $u_{i\vert \ast} \rightarrow u_{i+1}$ that is already included in the \textit{HON}. A higher order rule $u_{i\vert l} \rightarrow u_{i+1}$ is included if and only if,
+\[
+\vert\mathcal{C}\left(u_{i\vert l} \rightarrow u_{i+1}\right) - \mathcal{C}\left(u_{i\vert l-k} \rightarrow u_{i+1}\right)\vert \ge C_\delta
+\]
+
+The confidence of a rule is not equal to the transition probability for $C_m > 1$. So, the transition probabilities are computed separately based on the support after the \textit{HON} has been created.
+
+Run the script as,
+
+\texttt{\$ python3 nHON\textbackslash src\textbackslash <trajectory\_file> <save\_file>}
+
+
+\section{Prediction}
+Suppose we have multiple \textit{HON}s a trajectory, and we want to find out which \textit{HON} it is most similar to. An example of such task is if we have multiple \textit{HON}s representing musical pieces of different genre, and we have a musical piece that we want to predict the genre of.
+
+In the earlier implementation, we create multiple \textit{HON}s and extract features and approach the problem as a machine learning problem.
+
+In the current approach, we can view the problem as finding the most likely \textit{HON} that generates the trajectory under random walk.
+
+Let us represent the set of \textit{HON}s (also called models) by $M$, and suppose the trajectory is $t = [u_0,u_1,\ldots,u_n]$. 
+
+Represent the transition probability of $u_{i\vert l} \rightarrow u_{i+1}$ in $m \in M$ by $P\left(u_{i\vert l} \rightarrow u_{i+1}, m\right)$.
+
+Represent the rule with the longest prior that matches $u_{i\vert l} \rightarrow u_{i+1}$ in $m$ by $\mathcal{L}\left(u_{i\vert l} \rightarrow u_{i+1}, m\right)$.
+
+Then the log probability that $t$ came from $m$ is given by,
+\[
+\mathcal{P}\left(t,m\right) = \sum_{i = 0:n} \log\left(P\left(\mathcal{L}\left(u_{i\vert i} \rightarrow u_{n},m\right),m\right)\right)
+\]
+
+The predicted model for $t$ is the one with the max log probability.
+\[
+L\left(t\right) = \underset{m \in M}{\text{argmax }} \mathcal{P}\left(t,m\right)
+\]
+
+Run the script with
+
+\texttt{\$ python3 nHON\textbackslash src\textbackslash model\_comparison.py <trajectory\_file\_0> <trajectory\_file\_1> \ldots}
+
+
+\subsection{Experiment}
+Experiment was performed for classification between Classical and Jazz music. The available trajectories are split into test set and training set randomly with ratio $9:1$. The \textit{HON}s for the different genre are created using the test trajectories, and the prediction is done with the training trajectories.
+
+The entire experiment was repeated $30$ times. The confusion matrix is shown in Table \ref{tab:prediction}.
+
+\begin{table}
+	\centering
+	\begin{tabular}{c|c|c|}
+		& Classical (Predicted) & Jazz (Predicted)  \\ 
+		\hline 
+		Classical (Actual)& 420  & 30  \\ 
+		\hline 
+		Jazz (Actual)& 121  & 479  \\ 
+		\hline 
+	\end{tabular} 
+	\caption{Results for prediction.} \label{tab:prediction}
+\end{table}
+
+(Cannot compare directly with the previous approach using ML because we did not do Classical vs Jazz, and I am too lazy to do it again.)
+
+\section{Time Duration}
+One thing we are still missing is the time duration. As discussed, I tried concatenating it with the notes, and adding the durations of consecutive and same notes. That results in networks that are very sparse. So, not sure if thats a good approach.
+
+\end{document}
