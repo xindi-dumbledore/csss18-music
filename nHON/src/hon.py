@@ -147,6 +147,20 @@ class HON(object):
 				d = edges[e]
 				writer.writerow([e[0], e[1], d['last'], d['support'], d['confidence'], d['probability']])
 
+	
+	def generate_network(self, edges):
+		graph = {}
+		d = edges[e]
+
+		for e in edges:
+			if d['last'] not in graph:
+				graph[d['last']] = {}
+			if e[1] not in graph[d['last']]:
+				graph[d['last']][e[1]] = {}
+			
+			graph[e[0]][e[1]][d['']]
+
+
 	## Todo generate graph, pagerank, degree, centralities etc.
 
 		

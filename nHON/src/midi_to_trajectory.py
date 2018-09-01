@@ -55,7 +55,7 @@ def readData(fname):
 		if m_index == -1:
 			continue
 
-		#t_max = jdata[name][2][m_index][-1][1]										# Length of the piece (used for normalization)
+		#t_max = jdata[name][2][m_index][-1][1]				# Length of the piece (used for normalization)
 		trow = [(v[1]-v[0]) for v in jdata[name][2][m_index]]
 		#print(trow)
 
@@ -79,14 +79,12 @@ def readData(fname):
 		trow = [round(v,1) for v in trow]
 
 		# Filter out notes wih 0 interval
-		"""
+		
 		traj = []
 		for i in range(0, len(mrow)):
 			traj.append('{}_{}'.format(mrow[i], trow[i]))
 			
 		trajectories.append(traj)
-		"""
-		trajectories.append(mrow)
 
 		print('Processed: {}'.format(name))
 

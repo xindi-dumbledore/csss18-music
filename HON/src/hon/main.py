@@ -178,7 +178,8 @@ if __name__ == "__main__":
 		InputFileName = os.path.join(InputDirName, f)
 		OutputNetworkFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'network.csv'))
 		OutputRulesFile = os.path.join(OutputDirName, '{}-{}'.format(f[:-4], 'rules.csv'))
-		BuildHONfreq(InputFileName, OutputNetworkFile, OutputRulesFile)
+		#BuildHONfreq(InputFileName, OutputNetworkFile, OutputRulesFile)
+		BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile)
 		
 	"""
 	print('FREQ mode!!!!!!')
