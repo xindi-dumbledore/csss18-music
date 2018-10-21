@@ -169,7 +169,7 @@ def BuildHONfreq(InputFileName, OutputNetworkFile, OutputRulesFile):
 if __name__ == "__main__":
 	InputDirName = sys.argv[1]
 	OutputDirName = sys.argv[2]
-	MinSupport = int(sys.argv[3])
+	MinSupport = 1
 
 	fnames = [f for f in os.listdir(InputDirName) if os.path.isfile(os.path.join(InputDirName, f))]
 
