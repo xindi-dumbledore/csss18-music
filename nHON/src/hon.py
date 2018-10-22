@@ -17,6 +17,7 @@ class HON(object):
 		with open(fname, 'r') as file:
 			for row in file:
 				data.append(row)
+		return data
 
 	def get_edges(self, trajectory, delta_confidence=0.05, min_support=10, sep='\t', max_prior=-1):
 		"""
@@ -171,5 +172,5 @@ if __name__ == '__main__':
 
 	h = HON()
 	traj = h.read_trajectory(fname)
-	edges = h.get_edges(traj, sep='\t', max_prior=10, min_support=10, delta_confidence=0.05)
+	edges = h.get_edges(traj, sep='\t', max_prior=10, min_support=1, delta_confidence=0.05)
 	h.save_edges(edges, sname)

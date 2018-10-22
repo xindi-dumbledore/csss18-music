@@ -26,16 +26,18 @@ def get_model(edges):
 		adj[source][target][path] = float(d['probability'])
 	return adj
 
-def split_train_test(data, ratio=0.9):
+def split_train_test(data, ratio=0.9, size=10000):
 	np.random.shuffle(data)
+	data = data[:msize]
 
-	return data[:int(len(data)*ratio)], data[int(len(data)*ratio) + 1 :]
+	return data[:int(len(data)*ratio)], data[int(len(data)*ratio):]
 
 def get_trajectories(fname):
 	traj = []
 	with open(fname, 'r') as f:
 		for row in f:
-			traj.append(row)
+			if len(row.split('\t')) > 50:
+				traj.append(row)
 	return traj
 
 def get_longest_path_prob(sub_paths, priors):
@@ -80,8 +82,8 @@ def model_comparison(models, trajectory):
 			prob, uncertainty = path_probability(m, t)
 			p.append(prob)
 			u.append(uncertainty)
-		#print(p, u)	
 		prediction.append(p.index(max(p)))
+		#print(p, u, prediction[-1])	
 	return prediction
 		#print('Uncertainty', u)
 
@@ -92,8 +94,14 @@ if __name__ == '__main__':
 	h = hon.HON()
 
 	traj = []
+	msize = 10000000
 	for f in mname:
 		traj.append(get_trajectories(f))
+		if len(traj[-1]) < msize:
+			msize = len(traj[-1])
+
+	msize = min(200, msize) 								# set to 1000 trajectories per sample per trials to make it run faster
+	print('Batch size: {}'.format(msize))
 
 	confusion_matrix = [[0]*len(mname) for _ in range(0, len(mname))]
 	#print(confusion_matrix)
@@ -103,7 +111,7 @@ if __name__ == '__main__':
 		models, traj_test = [], []
 
 		for t in traj:
-			t0, t1 = split_train_test(t)
+			t0, t1 = split_train_test(t, ratio=0.9, size=msize)
 			#print(len(t0))
 			h_edges = h.get_edges(t0, sep='\t', max_prior=5, min_support=5, delta_confidence=0.05)
 			m = get_model(h_edges)
@@ -114,6 +122,8 @@ if __name__ == '__main__':
 		for i in range(0, len(models)):
 			t = traj_test[i]
 			pred = model_comparison(models, t)
+			#print(pred)
 			for p in pred:
 				confusion_matrix[i][p] += 1
+		
 		print(confusion_matrix)

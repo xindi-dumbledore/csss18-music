@@ -2,6 +2,7 @@ import sys
 import json
 import csv
 import os
+import ijson
 
 pitch_map = {
 	'C':	60,
@@ -24,13 +25,22 @@ pitch_map = {
 	'B-':	70 	
 }
 
-def readData(fname):
+def readData(fname, genre):
+	#parser = ijson.parse(open(fname, 'r'))
+	#or prefix, event, value in parser:
+	#	print(prefix, event, value)
+
+	#return None
+
 	with open(fname, 'r') as f:
 		jdata = json.load(f)
 
 	trajectories = [] 				# all the trajectories
 
 	for name in jdata:
+		if not name.startswith(genre):
+			continue
+
 		# Get pitch of song to convert to relative pitch
 		pitch = jdata[name][0].split(' ')[0]
 		pitch = pitch_map[pitch]
@@ -52,11 +62,11 @@ def readData(fname):
 				mrow = row
 				m_index = i
 
-		if m_index == -1:
-			continue
+		#if m_index == -1:
+		#	continue
 
 		#t_max = jdata[name][2][m_index][-1][1]				# Length of the piece (used for normalization)
-		trow = [(v[1]-v[0]) for v in jdata[name][2][m_index]]
+		#trow = [(v[1]-v[0]) for v in jdata[name][2][m_index]]
 		#print(trow)
 
 		# Merge consecutive identical notes
@@ -76,17 +86,20 @@ def readData(fname):
 		"""
 
 		# round the time
-		trow = [round(v,1) for v in trow]
+		#trow = [round(v,1) for v in trow]
 
 		# Filter out notes wih 0 interval
 		
-		traj = []
-		for i in range(0, len(mrow)):
-			traj.append('{}_{}'.format(mrow[i], trow[i]))
-			
-		trajectories.append(traj)
+		#traj = []
+		#for i in range(0, len(mrow)):
+		#	traj.append('{}_{}'.format(mrow[i], trow[i]))
+		#print(mrow)
+		trajectories.append(mrow)
 
-		print('Processed: {}'.format(name))
+		try:
+			print('Processed: {}'.format(name))
+		except:
+			pass
 
 	return trajectories
 
@@ -101,7 +114,8 @@ def saveTrajectory(data, sname):
 if __name__ == '__main__':
 	fname = sys.argv[1]
 	sname = sys.argv[2]
+	genre = sys.argv[3]
 
-	tdata = readData(fname)
+	tdata = readData(fname, genre)
 	saveTrajectory(tdata, sname)
 		

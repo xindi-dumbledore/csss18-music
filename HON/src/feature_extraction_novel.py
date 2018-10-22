@@ -195,7 +195,7 @@ def saveData(sname, data):
     dkeys = data.keys()
     tdata = [dkeys]
 
-    for i in xrange(0, max([len(data[d]) for d in data])):
+    for i in range(0, max([len(data[d]) for d in data])):
         row = []
 
         for d in dkeys:
@@ -256,10 +256,10 @@ if __name__ == '__main__':
             data['branchiness_mean'].append(np.mean(d2))
             data['branchiness_variance'].append(np.var(d2))
             if len(d3) > 1:
-                data['repeteadness_mean'].append(np.percentile(d3.values(), 95))
+                data['repeteadness_mean'].append(np.percentile(list(d3.values()), 95))
             else:
                 data['repeteadness_mean'].append(0)
-            data['repeteadness_variance'].append(np.var(d3.values()))
+            data['repeteadness_variance'].append(np.var(list(d3.values())))
             data['melodic_mean'].append(np.mean(d4))
             data['melodic_variance'].append(np.var(d4))
             data['pitch_in_rules'].append(np.mean(d5))
