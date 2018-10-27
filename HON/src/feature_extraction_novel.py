@@ -93,8 +93,6 @@ def getAbruptness(graph):
     u_pitch_difference = max(abs(max(u_pitches_rule1) - min(u_pitches_rule2)),
                                    abs(max(u_pitches_rule2) - min(u_pitches_rule1)))
     
-        
-
     return u_pitch_difference, w_pitch_difference
 
 

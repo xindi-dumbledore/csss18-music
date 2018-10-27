@@ -71,15 +71,15 @@ if __name__ == '__main__':
 
     data = {}
     data['American Folk'] = readFeature(
-        os.path.join(dirname, 'folk_larger_aggregate.csv'))
+        os.path.join(dirname, 'american_folk.csv'))
     data['Rock'] = readFeature(os.path.join(
-        dirname, 'rock_larger_aggregate.csv'))
+        dirname, 'rock.csv'))
     data['Classical'] = readFeature(os.path.join(
-        dirname, 'classical_larger_aggregate.csv'))
+        dirname, 'classical.csv'))
     data['Jazz'] = readFeature(os.path.join(
-        dirname, 'jazz_larger_aggregate.csv'))
-    data['Pop'] = readFeature(os.path.join(
-        dirname, 'pop_larger_aggregate.csv'))
+        dirname, 'jazz.csv'))
+    #data['Pop'] = readFeature(os.path.join(
+    #    dirname, 'pop_larger_aggregate.csv'))
 
     #names = ['American Folk', 'Rock', 'Classical', 'Jazz', 'Pop']
 
@@ -87,13 +87,13 @@ if __name__ == '__main__':
     #uabruptness = [folk['unweighted_abruptness'], rock['unweighted_abruptness'], classic['unweighted_abruptness'], jazz['unweighted_abruptness'], pop['unweighted_abruptness']]
     #wabruptness = [folk['weighted_abruptness'], rock['weighted_abruptness'], classic['weighted_abruptness'], jazz['weighted_abruptness'], pop['weighted_abruptness']]
 
-    plotDistribution(data, 'branchiness_mean', 'Branchiness (Mean)',
-                     "../../feature_comparison/branchiness.pdf", False)
+    plotDistribution(data, 'branchiness_mean', 'Branching (Mean)',
+                     "HON/feature_comparison/branchiness.pdf", False)
     plotDistribution(data, 'weighted_abruptness', 'Weighted Abruptness',
-                     "../../feature_comparison/weighted_abruptness.pdf", False)
+                     "HON/feature_comparison/weighted_abruptness.pdf", False)
     plotDistribution(data, 'unweighted_abruptness', 'Unweighted Abruptness',
-                     "../../feature_comparison/unweighted_abruptness.pdf", False)
+                     "HON/feature_comparison/unweighted_abruptness.pdf", False)
     plotDistribution(data, 'melodic_mean', 'Melodic (Mean)',
-                     "../../feature_comparison/melodic_mean.pdf", False, mean = False)
+                     "HON/feature_comparison/melodic_mean.pdf", False, mean = False)
     #plotDistribution(uabruptness, names, 'Unweighted Abruptness', True)
     #plotDistribution(wabruptness, names, 'Weighted Abruptness', True)

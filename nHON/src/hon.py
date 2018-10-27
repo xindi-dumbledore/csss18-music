@@ -172,5 +172,5 @@ if __name__ == '__main__':
 
 	h = HON()
 	traj = h.read_trajectory(fname)
-	edges = h.get_edges(traj, sep='\t', max_prior=10, min_support=1, delta_confidence=0.05)
+	edges = h.get_edges(traj, sep='\t', max_prior=5, min_support=1, delta_confidence=0.05)
 	h.save_edges(edges, sname)

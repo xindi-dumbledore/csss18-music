@@ -46,6 +46,7 @@ MinSupport = 1
 LastStepsHoldOutForTesting = 0
 MinimumLengthForTraining = 1
 InputFileDeliminator = ' '
+InputFileDeliminator = '\t'
 Verbose = True
 
 
