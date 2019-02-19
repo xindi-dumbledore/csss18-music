@@ -1,0 +1,316 @@
+"""
+Script for extraction of the novel features from HON
+"""
+
+from __future__ import print_function, division
+
+import networkx as nx
+import sys
+from pprint import pprint
+import os
+import csv
+import numpy as np
+import operator
+import community
+
+# ----- Part to set timeout if something takes too long
+import signal
+
+class TimeoutException(Exception):   # Custom exception class
+	pass
+
+def timeout_handler(signum, frame):   # Custom signal handler
+	raise TimeoutException
+
+# Change the behavior of SIGALRM
+signal.signal(signal.SIGALRM, timeout_handler)
+# ---- Part to set timeout if something takes too long
+
+
+def getFileName(dirname, musictype):
+	fnames = [f for f in os.listdir(
+		dirname) if os.path.isfile(os.path.join(dirname, f))]
+	fnames = [f for f in fnames if f.startswith(musictype)]
+	return fnames
+
+
+def getGMLNetwork(fname):
+	"""
+	Read the network stored as GML
+	"""
+	return nx.read_gml(fname)
+
+
+def getPitchesGivenRules(rule):
+	# this is a helper function
+	# Get the pitches based on the rules
+	current_node = rule.split('|')[0]
+	previous_nodes = rule.split('|')[1].split('.')
+	if previous_nodes == ['']:
+		pitches = [int(current_node)]
+	else:
+		pitches = [int(current_node)] + list(map(int, previous_nodes))
+	pitches = list(filter(lambda x: x != 128, pitches))
+	return pitches
+
+
+def getAbruptness(graph):
+	"""
+	Edges with high betweeness but low transition prob
+
+	Defined as betweenss/prob
+	"""
+	unweighted_edge_betweeness = nx.edge_betweenness_centrality(
+		graph, normalized=True)
+	weighted_edge_betweeness = nx.edge_betweenness_centrality(
+		graph, normalized=True, weight='weight')
+	transition_prob = graph.edges(data=True)
+
+	unweighted_abruptness = {}
+	weighted_abruptness = {}
+
+	for edge in transition_prob:
+		unweighted_abruptness[(edge[0], edge[1])] = unweighted_edge_betweeness[
+			(edge[0], edge[1])] / edge[2]['weight']
+		weighted_abruptness[(edge[0], edge[1])] = weighted_edge_betweeness[
+			(edge[0], edge[1])] / edge[2]['weight']
+
+	# Get edge highest abruptness
+	weighted_highest = sorted(weighted_abruptness, key=weighted_abruptness.get)[-int(0.95*len(weighted_abruptness))]
+	unweighted_highest = sorted(unweighted_abruptness, key=unweighted_abruptness.get)[-int(0.95*len(unweighted_abruptness))]
+	
+	w_rule_1 = weighted_highest[0]
+	w_rule_2 = weighted_highest[1]
+	w_pitches_rule1 = getPitchesGivenRules(w_rule_1)
+	w_pitches_rule2 = getPitchesGivenRules(w_rule_2)
+	w_pitch_difference = max(abs(max(w_pitches_rule1) - min(w_pitches_rule2)),
+						abs(max(w_pitches_rule2) - min(w_pitches_rule1)))
+
+
+	u_rule_1 = unweighted_highest[0]
+	u_rule_2 = unweighted_highest[1]
+	u_pitches_rule1 = getPitchesGivenRules(u_rule_1)
+	u_pitches_rule2 = getPitchesGivenRules(u_rule_2)
+	u_pitch_difference = max(abs(max(u_pitches_rule1) - min(u_pitches_rule2)),
+								   abs(max(u_pitches_rule2) - min(u_pitches_rule1)))
+	
+	return u_pitch_difference, w_pitch_difference
+
+
+def getBranchisess(graph, tau=0.1):
+	"""
+	Unweighted out-degree counting only edges with weight greater than tau
+	"""
+
+	# Edges with weight greater than tau
+	edges = [(e[0], e[1])
+			 for e in graph.edges(data=True) if e[2]['weight'] > tau]
+
+	sg = nx.Graph()
+	sg.add_edges_from(edges)
+	# add nodes in case there are nodes which are not included in edges
+	sg.add_nodes_from(graph.nodes())
+
+	degree = nx.degree(sg)
+	return [d[1] for d in degree]
+
+
+def getRepeatedness(graph, tau=0.75):
+	"""
+	Unweighted chaings of edge weight greather than tau
+	"""
+	edges = [(e[0], e[1])
+			 for e in graph.edges(data=True) if e[2]['weight'] > tau]
+	edge_weight = nx.get_edge_attributes(graph, "weight")
+	sg = nx.DiGraph()
+	sg.add_edges_from(edges)
+	nx.set_edge_attributes(sg, edge_weight, "weight")
+	# find paths that is likely to occur (transition probability is higher)
+	# inverse weight to find longest path
+	from itertools import permutations
+	edge_weight = nx.get_edge_attributes(sg, "weight")
+	node_pairs = permutations(list(sg.nodes()), 2)
+	path_dict = {}
+	for (n1, n2) in node_pairs:
+		paths = list(nx.all_simple_paths(sg, source=n1, target=n2))
+		for each_path in paths:
+			edges = zip(each_path[:-1], each_path[1:])
+			prob = sum([edge_weight[edge] for edge in edges])
+			path_dict[','.join(each_path)] = prob
+	return path_dict
+
+
+def getMelodic(graph):
+	nodes = list(graph.nodes())
+	rule_length_list = []
+	for node in nodes:
+		previous_nodes = node.split('|')[1].split('.')
+		if previous_nodes == ['']:
+			length = 1
+		else:
+			length = len(previous_nodes) + 1
+		rule_length_list.append(length)
+	return rule_length_list
+
+
+def getPitchRange(graph):
+	import itertools
+	nodes = list(graph.nodes())
+	pitch_in_rules = []
+	for node in nodes:
+		pitches = getPitchesGivenRules(node)
+		pitch_in_rules.append(pitches)
+	pitch_range_in_rules = []
+	for pitches in pitch_in_rules:
+		pitch_range_in_rules.append(max(pitches) - min(pitches))
+	pitches_in_piece = list(itertools.chain(*pitch_in_rules))
+	pitch_range_of_piece = max(pitches_in_piece) - min(pitches_in_piece)
+	return pitch_range_in_rules, pitch_range_of_piece
+
+
+def getPitchChangeBetweenRules(graph, tau=0.75):
+	edges = [(e[0], e[1])
+			 for e in graph.edges(data=True) if e[2]['weight'] > tau]
+	edge_weight = nx.get_edge_attributes(graph, "weight")
+	sg = nx.DiGraph()
+	sg.add_edges_from(edges)
+	nx.set_edge_attributes(sg, edge_weight, "weight")
+	pitch_difference_between_rules = []
+	for edge in sg.edges():
+		rule_1 = edge[0]
+		rule_2 = edge[1]
+		pitches_rule1 = getPitchesGivenRules(rule_1)
+		pitches_rule2 = getPitchesGivenRules(rule_2)
+		try:
+			pitch_difference = max(abs(max(pitches_rule1) - min(pitches_rule2)),
+								   abs(max(pitches_rule2) - min(pitches_rule1)))
+		except:
+			continue
+		pitch_difference_between_rules.append(pitch_difference)
+	return pitch_difference_between_rules
+
+
+def saveData(sname, data, mlabel):
+	dkeys = data.keys()
+	tdata = [dkeys]
+
+	for i in range(0, max([len(data[d]) for d in data])):
+		row = [mlabel]
+
+		for d in dkeys:
+			if len(data[d]) > i:
+				row.append(data[d][i])
+			else:
+				row.append(None)
+		tdata.append(row)
+
+	with open(sname, 'w') as f:
+		writer = csv.writer(f, delimiter='\t')
+		for row in tdata:
+			writer.writerow(row)
+
+
+def generateFeatures(graph):
+	#graph = getGMLNetwork(os.path.join(dirname, f))
+
+	print('Generating HON Features')
+	d2 = getBranchisess(graph, 0.1)
+	d3 = getRepeatedness(graph, 0.75)
+
+	#d2 = getBranchisess(graph, 2)
+	#d3 = getRepeatedness(graph, 10)
+
+	if len(d3) > 1:
+		return[np.mean(d2), np.percentile(list(d3.values()), 95)]
+	else:
+		return[np.mean(d2), 0]
+
+
+	d0, d1 = getAbruptness(graph)
+	d4 = getMelodic(graph)
+	d5, d6 = getPitchRange(graph)
+	d7 = getPitchChangeBetweenRules(graph, 0.75)
+
+	# print(d4)
+	# print(d0)
+	#data['unweighted_abruptness'] += d0
+	# print(data['unweighted_abruptness'])
+	#data['weighted_abruptness'] += d1
+	#data['branchiness'] += d2
+
+	data = [d0, d1, np.mean(d2), np.var(d2)]
+
+	if len(d3) > 1:
+		data.append(np.percentile(list(d3.values()), 95))
+	else:
+		data.append(list(d3.values())[0])
+
+	data += [np.var(list(d3.values())), np.mean(d4), np.var(d4), np.mean(d5), np.var(d5), d6, np.mean(d7), np.var(d7)]
+
+	print('Generating Simple Features.')
+	# Features from simple networks
+	d8 = graph.number_of_nodes()
+	d9 = graph.number_of_edges()
+	d10 = nx.diameter(graph)
+	#d11 = nx.average_shortest_path_length(graph)
+	d12 = nx.density(graph)
+	#d13 = nx.average_clustering(graph)
+	#d14 = nx.betweenness_centrality(graph)
+	d15 = community.modularity(community.best_partition(graph), graph)
+
+	data += [d8, d9, d10, d10, d12, d13, d14]
+
+	return data
+
+	data['unweighted_abruptness'].append(d0)
+	data['weighted_abruptness'].append(d1)
+	data['branchiness_mean'].append(np.mean(d2))
+	data['branchiness_variance'].append(np.var(d2))
+	if len(d3) > 1:
+		data['repeteadness_mean'].append(np.percentile(list(d3.values()), 95))
+	else:
+		data['repeteadness_mean'].append(0)
+	data['repeteadness_variance'].append(np.var(list(d3.values())))
+	data['melodic_mean'].append(np.mean(d4))
+	data['melodic_variance'].append(np.var(d4))
+	data['pitch_in_rules'].append(np.mean(d5))
+	data['pitch_in_piece'].append(d6)
+	data['pitch_between_rules'].append(np.mean(d7))
+
+if __name__ == '__main__':
+	dirname = sys.argv[1]			# GML dirname
+	sname = sys.argv[2]				# Save file name
+	musictype = sys.argv[3] 		# Music Type / Genre
+	mlabel = sys.argv[4]
+
+	data = {}
+	data['unweighted_abruptness'] = []
+	data['weighted_abruptness'] = []
+	data['branchiness_mean'] = []
+	data['branchiness_variance'] = []
+	data['repeteadness_mean'] = []
+	data['repeteadness_variance'] = []
+	data['melodic_mean'] = []
+	data['melodic_variance'] = []
+	data['pitch_in_piece'] = []
+	data['pitch_in_rules'] = []
+	data['pitch_between_rules'] = []
+
+	for f in getFileName(dirname, musictype):
+		print('Processing: {}'.format(f))
+
+		try:
+			signal.alarm(60)
+
+			# If a particular file takes too long , skip it
+			generateFeatures(dirname, f, data)
+		except TimeoutException:
+			# handle the exception
+			signal.alarm(0)
+			print('Timeout')
+			continue # continue the for loop if function A takes more than 10 second
+		else:
+			# Reset the alarm
+			signal.alarm(0)
+
+	saveData(sname, data, mlabel)
