@@ -13,4 +13,5 @@ Data/hon_data_larger.zip
 Data/music21 data parsing.ipynb
 Data/music21 data parsing.ipynb
 WebSci/dataset/*
-WebSci/outputs/hot_data/*
+WebSci/outputs/hon_data/*
+WebSci/outputs/hon_data_10/*
