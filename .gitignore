@@ -15,3 +15,10 @@ Data/music21 data parsing.ipynb
 WebSci/dataset/*
 WebSci/outputs/hon_data/*
 WebSci/outputs/hon_data_10/*
+WebSci/outputs/features/folk.csv
+WebSci/outputs/features/jazz.csv
+WebSci/midi.txt
+Data/music21 data parsing.ipynb
+WebSci/outputs/features/classical.csv
+WebSci/outputs/features/pop.csv
+WebSci/outputs/features/rock.csv
