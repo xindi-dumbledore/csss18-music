@@ -1,0 +1,105 @@
+\documentclass[]{article}
+
+\newcommand{\pn}{$(-)$}
+\newcommand{\pa}{$(\ast)$}
+\newcommand{\pb}{$(\ast\ast)$}
+\newcommand{\pc}{$\ast\ast\ast$}
+
+%opening
+\title{Results: KS Statistic between Features}
+\author{}
+
+\begin{document}
+
+\maketitle
+
+Kolmogorov-Smirnov statistic between features of different music genre.
+
+Two-sided test.
+
+Null hypothesis: The two features are drawn from the same distribution.
+
+The numbers in the tables are the KS statistic. The p-value are denoted in parenthesis.
+
+\pn  : p-value $\ge 0.05$
+
+\pa : $0.05 >$ p-value $\ge 0.01$
+
+\pb: $0.01 >$ p-value
+
+\begin{table}
+	\centering
+	\caption{Unweighted Abruptness}
+	\begin{tabular}{|l | c c c c c|}
+		\hline
+		& CLASSICAL & FOLK & JAZZ & ROCK & POP \\
+		\hline
+		CLASSICAL& & 0.04 \pa &0.27 \pb & 0.21 \pb & 0.26 \pb \\
+		FOLK & & & 0.28 \pb & 0.22 \pb & 0.27 \pb\\
+		JAZZ & &&&0.10 \pa & 0.05 \pn\\
+		ROCK & &&& &0.08 \pn\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Weighted Abruptness}
+	\begin{tabular}{|l | c c c c c|}
+		\hline
+		& CLASSICAL & FOLK & JAZZ & ROCK & POP \\
+		\hline
+		CLASSICAL& & 0.03 \pa & 0.26 \pb & 0.22 \pb & 0.25 \pb \\
+		FOLK & && 0.28 \pb & 0.24 \pb & 0.27 \pb\\
+		JAZZ & &&&0.10 \pa & 0.05 \pn\\
+		ROCK & &&&&0.07 \pn\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Branching}
+	\begin{tabular}{|l | c c c c c|}
+		\hline
+		& CLASSICAL & FOLK & JAZZ & ROCK & POP \\
+		\hline
+		CLASSICAL& & 0.45 \pb & 0.45 \pb & 0.53 \pb & 0.52 \pb\\
+		FOLK & &&0.17 \pb & 0.14 \pb & 0.13 \pa\\
+		JAZZ & &&&0.20 \pb & 0.17 \pb\\
+		ROCK & &&&&0.09 \pn\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Repeatedness}
+	\begin{tabular}{|l | c c c c c|}
+		\hline
+		& CLASSICAL & FOLK & JAZZ & ROCK & POP \\
+		\hline
+		CLASSICAL& & 0.06 \pb & 0.21 \pb & 0.15 \pb & 0.17 \pb \\
+		FOLK & &&0.27 \pb & 0.20 \pb & 0.23 \pb \\
+		JAZZ & &&&0.19 \pb & 0.09 \pn\\
+		ROCK & &&&&0.18 \pb\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Melodic}
+	\begin{tabular}{|l | c c c c c|}
+		\hline
+		& CLASSICAL & FOLK & JAZZ & ROCK & POP \\
+		\hline
+		CLASSICAL& & 0.08 \pb & 0.24 \pb & 0.11 \pb & 0.09 \pn\\
+		FOLK & &&0.27 \pb & 0.11 \pb & 0.12 \pb\\
+		JAZZ & &&&0.30 \pb & 0.18 \pb\\
+		ROCK & &&&&0.14 \pb\\
+		\hline
+	\end{tabular}
+\end{table}
+
+\end{document}

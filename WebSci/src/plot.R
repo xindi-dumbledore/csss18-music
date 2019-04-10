@@ -4,14 +4,21 @@ library(plyr)
 library(latex2exp)
 library(tikzDevice)
 
-drawDistribution <- function(data){
-  cdat <- ddply(data, "genre", summarise, m=mean(unweighted_abruptness))
+drawDistribution <- function(fname, sname){
+  data <- read.csv(fname, sep = '\t', header = TRUE)
+  cdat <- ddply(data, "genre", summarise, m=mean(melodic_mean))
   
-  pl <- ggplot(data, aes(x=unweighted_abruptness, color=genre))
+  pl <- ggplot(data, aes(x=melodic_mean, color=genre))
   pl <- pl + geom_density()
   pl <- pl + geom_vline(data=cdat, aes(xintercept=m, color=genre), linetype='dashed', size=1)
-  pl <- pl + theme_minimal()
-  pl <- pl + scale_x_sqrt()
+  pl <- pl + theme_bw()
+  #pl <- pl + scale_x_sqrt()
+  pl <- pl + scale_color_brewer(palette="Set2")
+  pl <- pl + theme(legend.position="bottom") + labs(fill='',color='') + xlab('Melodic') + ylab('Density')
+  
+  tikz(file = sname, width = 5, height = 3, standAlone = TRUE)
+  print(pl)
+  dev.off()
   
   return(pl)
 }
