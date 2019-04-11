@@ -6,13 +6,14 @@ library(tikzDevice)
 
 drawDistribution <- function(fname, sname){
   data <- read.csv(fname, sep = '\t', header = TRUE)
-  cdat <- ddply(data, "genre", summarise, m=mean(melodic_mean))
+  cdat <- ddply(data, "genre", summarise, m=mean(weighted_abruptness))
   
-  pl <- ggplot(data, aes(x=melodic_mean, color=genre))
-  pl <- pl + geom_density()
-  pl <- pl + geom_vline(data=cdat, aes(xintercept=m, color=genre), linetype='dashed', size=1)
+  pl <- ggplot(data, aes(x=weighted_abruptness, color=genre, fill=genre))
+  #pl <- pl + geom_density()
+  pl <- pl + geom_line(stat='density')
+  pl <- pl + geom_vline(data=cdat, aes(xintercept=m, color=genre), linetype='dashed', size=1, show.legend = FALSE)
   pl <- pl + theme_bw()
-  #pl <- pl + scale_x_sqrt()
+  pl <- pl + scale_x_log10()
   pl <- pl + scale_color_brewer(palette="Set2")
   pl <- pl + theme(legend.position="bottom") + labs(fill='',color='') + xlab('Melodic') + ylab('Density')
   
