@@ -14,29 +14,30 @@
 
 from collections import defaultdict, Counter
 
-Graph = defaultdict(dict)
+#Graph = defaultdict(dict)
 Verbose = True
 
 def Initialize():
     Graph = defaultdict(dict)
+    return Graph
 
 
 def BuildNetwork(Rules):
     #print(Rules)
     VPrint('Building network')
-    Initialize()
+    Graph = Initialize()
     SortedSource = sorted(Rules, key=lambda x: len(x))
     for source in SortedSource:
         for target in Rules[source]:
             Graph[source][(target,)] = Rules[source][target]
             # following operations are destructive to Rules
             if len(source) > 1:
-                Rewire(source, (target,))
+                Rewire(Graph, source, (target,))
     #print(Graph)
-    RewireTails()
+    RewireTails(Graph)
     return Graph
 
-def Rewire(source, target):
+def Rewire(Graph, source, target):
     PrevSource = source[:-1]
     PrevTarget = (source[-1],)
     #print(PrevSource, PrevTarget)
@@ -44,7 +45,7 @@ def Rewire(source, target):
         Graph[PrevSource][source] = Graph[PrevSource][PrevTarget]
         del(Graph[PrevSource][PrevTarget])
 
-def RewireTails():
+def RewireTails(Graph):
     ToAdd = []
     ToRemove = []
     for source in Graph:

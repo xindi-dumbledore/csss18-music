@@ -37,12 +37,12 @@ if __name__ == '__main__':
 
 		print('Processing: {}'.format(f))
 
-		#try:
-		#buildHON(InputFileName, OutputRulesFile, OutputNetworkFile)
-		main.BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile)
-		#except:
-		#	pass
+		try:
+			#buildHON(InputFileName, OutputRulesFile, OutputNetworkFile)
+			main.BuildHON(InputFileName, OutputNetworkFile, OutputRulesFile)
+		except:
+			pass
 
-		i += 1
-		if i > 10:
-			break
+		#i += 1
+		#if i > 10:
+		#	break

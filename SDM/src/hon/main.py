@@ -21,7 +21,7 @@ import itertools
 
 ## Initialize algorithm parameters
 MaxOrder = 99
-MinSupport = 10
+MinSupport = 1
 
 ## Initialize user parameters
 #InputFileName = '../data/traces-simulated-mesh-v100000-t100-mo4.csv'
