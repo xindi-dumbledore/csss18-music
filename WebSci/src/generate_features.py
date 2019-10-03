@@ -95,8 +95,8 @@ def getAbruptness(graph, label):
 	pitch = getPitchOffset(graph)
 	#d = int(np.sqrt(graph.number_of_nodes()))
 	#u_node_betweeness = nx.betweenness_centrality(graph, k=d)
-	edge_betweeness = nx.edge_betweenness_centrality(graph, weight='weigh', normalized=True)
-		
+	edge_betweeness = nx.edge_betweenness_centrality(graph, weight='weight', normalized=True)
+	
 	transition_prob = graph.edges(data=True)
 
 	weighted_abruptness = {(e[0],e[1]):0 for e in transition_prob}

@@ -35,3 +35,5 @@ if __name__ == '__main__':
 			main.DumpNetwork(Network, OutputNetworkFile)
 		except:
 			pass
+
+		#break
