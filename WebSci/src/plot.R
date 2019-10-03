@@ -53,7 +53,7 @@ drawDistribution <- function(fname, sname){
   p1 <- p1 + geom_vline(data=cdat, aes(xintercept=m, color=genre), linetype='dashed', show.legend = FALSE, size=1)
   p1 <- p1 + theme_classic()
   #p1 <- p1 + scale_x_sqrt()
-  p1 <- p1 + scale_x_log10()
+  #p1 <- p1 + scale_x_log10()
   #p1 <- p1 + coord_cartesian(xlim=c(10,10000))
   #p1 <- p1 + xlim(0, 20)
   p1 <- p1 + scale_color_brewer(palette="Set1") + scale_fill_brewer(palette="Set1")
