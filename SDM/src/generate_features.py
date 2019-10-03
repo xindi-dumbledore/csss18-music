@@ -315,15 +315,18 @@ def getRepeatedness(graph, tau=0.75):
 	from itertools import permutations
 	edge_weight = nx.get_edge_attributes(sg, "weight")
 	node_pairs = permutations(list(sg.nodes()), 2)
-	path_dict = {}
+	path_dict, max_length = {}, 0
 	for (n1, n2) in node_pairs:
 		paths = list(nx.all_simple_paths(sg, source=n1, target=n2))
 		for each_path in paths:
+			if len(each_path) > max_length:
+				max_length = len(each_path)
+
 			edges = zip(each_path[:-1], each_path[1:])
 			prob = sum([edge_weight[edge] for edge in edges])
 			path_dict[','.join(each_path)] = prob
-	
-	return len(path_dict)
+
+	return max_length, len(path_dict)
 
 	"""
 	Unweighted chaings of edge weight greather than tau
@@ -463,7 +466,7 @@ def generateFeatures(graph, label):
 
 	d1  = getBranchisess(graph, 0.10)
 
-	d2 = getRepeatedness(graph, 0.75)
+	d2, d7 = getRepeatedness(graph, 0.75)
 
 	d3 = getMelodic(graph)
 
@@ -473,68 +476,21 @@ def generateFeatures(graph, label):
 
 	#d12, d13, d14 = getPitchAsymetry(graph, label)
 
-	d7 = graph.number_of_nodes()
-	d8 = graph.number_of_edges()
+	d8 = graph.number_of_nodes()
+	d9 = graph.number_of_edges()
 
 	largest_cc = max(nx.connected_components(graph.to_undirected()), key=len)
-	d9 = nx.diameter(graph.subgraph(largest_cc).to_undirected())
-	d10 = nx.average_shortest_path_length(graph)
-	d11 = nx.density(graph)
-	d12 = nx.average_clustering(graph)
-	d13 = community.modularity(community.best_partition(graph.to_undirected()), graph.to_undirected())
+	d10 = nx.diameter(graph.subgraph(largest_cc).to_undirected())
+	d11 = nx.average_shortest_path_length(graph)
+	d12 = nx.density(graph)
+	d13 = nx.average_clustering(graph)
+	d14 = community.modularity(community.best_partition(graph.to_undirected()), graph.to_undirected())
 
-	data = [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13]
+	data = [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14]
 
 	t = time.process_time() - stime
 
 	return data, t
-
-
-	# print(d4)
-	# print(d0)
-	#data['unweighted_abruptness'] += d0
-	# print(data['unweighted_abruptness'])
-	#data['weighted_abruptness'] += d1
-	#data['branchiness'] += d2
-
-	data = [d0, d1, np.mean(d2), np.var(d2)]
-
-	if len(d3) > 1:
-		data.append(np.percentile(list(d3.values()), 95))
-	else:
-		data.append(list(d3.values())[0])
-
-	data += [np.var(list(d3.values())), np.mean(d4), np.var(d4), np.mean(d5), np.var(d5), d6, np.mean(d7), np.var(d7)]
-
-	print('Generating Simple Features.')
-	# Features from simple networks
-	d8 = graph.number_of_nodes()
-	d9 = graph.number_of_edges()
-	d10 = nx.diameter(graph)
-	#d11 = nx.average_shortest_path_length(graph)
-	d12 = nx.density(graph)
-	#d13 = nx.average_clustering(graph)
-	#d14 = nx.betweenness_centrality(graph)
-	d15 = community.modularity(community.best_partition(graph), graph)
-
-	data += [d8, d9, d10, d10, d12, d13, d14]
-
-	return data
-
-	data['unweighted_abruptness'].append(d0)
-	data['weighted_abruptness'].append(d1)
-	data['branchiness_mean'].append(np.mean(d2))
-	data['branchiness_variance'].append(np.var(d2))
-	if len(d3) > 1:
-		data['repeteadness_mean'].append(np.percentile(list(d3.values()), 95))
-	else:
-		data['repeteadness_mean'].append(0)
-	data['repeteadness_variance'].append(np.var(list(d3.values())))
-	data['melodic_mean'].append(np.mean(d4))
-	data['melodic_variance'].append(np.var(d4))
-	data['pitch_in_rules'].append(np.mean(d5))
-	data['pitch_in_piece'].append(d6)
-	data['pitch_between_rules'].append(np.mean(d7))
 
 if __name__ == '__main__':
 	dirname = sys.argv[1]			# GML dirname

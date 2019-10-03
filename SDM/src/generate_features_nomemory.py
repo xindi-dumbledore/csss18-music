@@ -69,7 +69,7 @@ if __name__ == '__main__':
 		musictype = m[0]
 		musiclabel = m[1]
 
-		fnames = getFiles(input_dirname, musictype)
+		fnames = getFiles(input_dirname, musictype)[:5]
 		#np.random.shuffle(fnames)
 		#fnames = fnames[:500]
 
