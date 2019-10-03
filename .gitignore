@@ -22,6 +22,8 @@ Data/music21 data parsing.ipynb
 WebSci/outputs/features/classical.csv
 WebSci/outputs/features/pop.csv
 WebSci/outputs/features/rock.csv
+WebSci/venv/*
+*.csv
 ## Core latex/pdflatex auxiliary files:
 *.aux
 *.lof
@@ -281,3 +283,4 @@ TSWLatexianTemp*
 
 # standalone packages
 *.stas
+*.json

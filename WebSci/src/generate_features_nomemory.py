@@ -4,6 +4,8 @@ import sys
 import os
 import csv
 import networkx as nx
+from multiprocessing import Pool
+import numpy as np
 
 # ----- Part to set timeout if something takes too 
 import signal
@@ -26,24 +28,81 @@ def getFiles(dirname, musictype):
 	return fnames
 
 
-def saveData(sname, data, mlabel):
+def saveData(sname, data, mlabel, song, t):
 	with open(sname, 'a') as f:
-		writer = csv.writer(f, delimiter='\t')
-		writer.writerow(data.append(mlabel))
+		writer = csv.writer(f, delimiter='\t', quotechar='|')
+		writer.writerow(data + [mlabel, song, t])
+
+
+def parallelComputation(arg):
+	f = arg[0]
+	input_dirname = arg[1]
+	musiclabel = arg[2]
+	print(f)
+	try:
+		edges = gml.getEdges(f, input_dirname)
+		if len(edges) == 0:
+			return
+		graph = gml.generateGraph(edges)
+		
+		#print(nx.info(graph))
+
+		data, t = features.generateFeatures(graph, musiclabel)
+		print(data, t)
+		#saveData(featurefile, data, musiclabel, f, t)
+
+		return data, t, f
+	except:
+		pass
+	return None
+
 
 if __name__ == '__main__':
 	input_dirname = sys.argv[1]
-	#output_dirname = sys.argv[2]
-	gml_dirname = sys.argv[2]
-	featurefile = sys.argv[3]
-	musictype = sys.argv[4]
-	musiclabel = sys.argv[5]
+	featurefile = sys.argv[2]
+	#musictype = sys.argv[3]
+	#musiclabel = sys.argv[4]
 
-	fnames = getFiles(input_dirname, musictype)
+	labels = [('pop','POP'),('metal','ROCK'),('classical','CLASSICAL'),('jazz','JAZZ'),('american','FOLK')]
 
+	for m in labels:
+		musictype = m[0]
+		musiclabel = m[1]
+
+		fnames = getFiles(input_dirname, musictype)
+		np.random.shuffle(fnames)
+		fnames = fnames[:500]
+
+		args = [[f,input_dirname,musiclabel] for f in fnames]
+
+		with Pool() as pool:
+			results = pool.map(parallelComputation, args)
+
+		for r in results:
+			if r is None:
+				continue
+			saveData(featurefile, r[0], musiclabel, r[2], r[1])
+
+
+	"""
 	for f in fnames:
+		if i > 50:
+			break
 		try:
-			signal.alarm(60)
+			print('Processing: \t {}'.format(f))
+			
+
+			i += 1
+
+			#break
+		except:
+			pass
+
+		#break
+	"""
+	"""
+		try:
+			signal.alarm(1800)
 
 			# If a particular file takes too long , skip it
 			print('Processing: \t {}'.format(f))
@@ -60,7 +119,7 @@ if __name__ == '__main__':
 
 			data = features.generateFeatures(graph)
 			print(data)
-			saveData(featurefile, data, mlabel)
+			#saveData(featurefile, data, musiclabel, f)
 		except:
 		#	print('Error')
 		#	pass
@@ -73,3 +132,4 @@ if __name__ == '__main__':
 			signal.alarm(0)
 
 	#features.saveData(featurefile, data, mlabel)
+	"""

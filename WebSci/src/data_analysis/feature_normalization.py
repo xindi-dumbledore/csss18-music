@@ -3,22 +3,26 @@ import sys
 import numpy as np
 
 def readData(fname):
-	data = [[] for _ in range(0,11)]
+	data = [[] for _ in range(0,16)]
 	with open(fname, 'r') as f:
 		reader = csv.reader(f, delimiter='\t')
 		next(reader)
 		for row in reader:
-			for i in range(0, len(row)-1):
+			#print(row, row[-3])
+			for i in range(0, len(row)-3):
+				#print(i, len(row))
 				data[i].append(float(row[i]))
-			data[-1].append(row[-1])
+			data[-1].append(row[-3])
 
 	return data
 
 def saveData(sname, data):
 	ndata = [[] for _ in range(0, len(data[0]))]
+	#print(len(ndata), len(data[0]))
 	for row in data:
 		row = list(row)
 		for i in range(0, len(row)):
+			#print(i, len(ndata[i]), len(row))
 			ndata[i].append(row[i])
 
 	with open(sname, 'a+') as f:

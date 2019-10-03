@@ -5,41 +5,18 @@ import networkx as nx
 import os
 import numpy as np
 import generate_features as honfeatures
+import generate_gml as gml
 
 
 def getFiles(dirname, musictype):
 	fnames = [f for f in os.listdir(dirname) if os.path.isfile(os.path.join(dirname, f))]
+	fnames = [f for f in fnames if f.endswith('-network.csv')]
 	fnames = [f for f in fnames if f.startswith(musictype)]
 	return fnames
 
 
-def trajectoryToGraph(fname):
-	trajectory = []
-	with open(fname, 'r') as f:
-		reader = csv.reader(f, delimiter=' ')
-		for row in reader:
-			trajectory += row
 
-	graph = nx.DiGraph()
-	edges = []
-	for i in range(1, len(trajectory)-1):
-		edge = (trajectory[i], trajectory[i+1])
-		
-		if not graph.has_edge(edge[0], edge[1]):
-			graph.add_edge(edge[0], edge[1], weight=0)
 
-		graph[edge[0]][edge[1]]['weight'] += 1
-		#edges.append((trajectory[i], trajectory[i+1]))
-
-	
-	# Convert weights to probabilities
-	
-	for u in graph.nodes():
-		m = sum([graph[u][v]['weight'] for v in graph[u]])
-		for v in graph[u]:
-			graph[u][v]['weight'] = graph[u][v]['weight'] / m
-	
-	return graph
 
 
 def getFeatures(graph):
@@ -65,22 +42,62 @@ def getFeatures(graph):
 
 	return [d1, d2, d3, d4, d5, d6, np.mean(list(d7.values())), d8]
 
-def saveFeatures(sname, feature):
+
+def saveFeatures(sname, features):
 	with open(sname, 'a+') as f:
 		writer = csv.writer(f, delimiter='\t')
 		for row in features:
 			writer.writerow(row)
 
 
-if __name__ == '__main__':
-	tdir = sys.argv[1]
-	sname = sys.argv[2]
-	mtype = sys.argv[3]
-	mlabel = sys.argv[4]
 
+def convertToSimpleNetwork(edges):
+	simple_edges = []
+	for e in edges:
+		u = e[0].split('|')[0]
+		v = e[1].split('|')[0]
+		simple_edges.append((u,v))
+
+	g = nx.DiGraph()
+	g.add_edges_from(simple_edges)
+	return g
+
+
+if __name__ == '__main__':
+	input_dirname = sys.argv[1]
+	#featurefile = sys.argv[2]
+	sname = sys.argv[2]
+	
+	labels = [('pop','POP'),('metal','ROCK'),('classical','CLASSICAL'),('jazz','JAZZ'),('american','FOLK')]
+
+	for m in labels:
+		musictype = m[0]
+		musiclabel = m[1]
+
+		fnames = getFiles(input_dirname, musictype)
+		np.random.shuffle(fnames)
+		fnames = fnames[:500]
+
+		for f in fnames:
+			edges = gml.getEdges(f, input_dirname)
+
+			graph = convertToSimpleNetwork(edges)
+
+			print(f)
+			print(nx.info(graph))
+
+			fea = getFeatures(graph)
+			
+			d = np.mean([d[1] for d in graph.out_degree()])
+ 
+			fea += [d, musiclabel]
+			print(fea)
+			saveFeatures(sname, [fea])
+
+	"""
 	features = []
 
-	fnames = getFiles(tdir, mtype)
+	fnames = getFiles(tdir, mtype)[:500]
 
 	for f in fnames:
 		print('Processing: {}'.format(f))
@@ -100,3 +117,4 @@ if __name__ == '__main__':
 		if len(features) >= 100:
 			saveFeatures(sname, features)
 			features = []
+	"""

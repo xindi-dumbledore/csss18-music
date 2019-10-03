@@ -2,7 +2,7 @@ import sys
 import json
 import csv
 import os
-import ijson
+#import ijson
 
 pitch_map = {
 	'C':	60,
@@ -39,7 +39,10 @@ def readData(fname, genre):
 
 	for name in jdata:
 		if not name.startswith(genre):
+			#print(name)
 			continue
+		print(name)
+		continue
 
 		# Get pitch of song to convert to relative pitch
 		pitch = jdata[name][0].split(' ')[0]
@@ -94,16 +97,17 @@ def readData(fname, genre):
 		#for i in range(0, len(mrow)):
 		#	traj.append('{}_{}'.format(mrow[i], trow[i]))
 		#print(mrow)
-		genre_map
-
-		data[fname] = {'trajectory':mrow, 'pitch':pitch, 'genre':}
+		genre_map = {'metal_rock': 'ROCK', 'pop': 'POP', 'classical': 'CLASSICAL', 'jazz': 'JAZZ', 'american_folk': 'FOLK'}
+		data[name] = {'trajectory':mrow, 'pitch':pitch, 'genre': genre_map[genre]}
 
 		try:
 			print('Processed: {}'.format(name))
 		except:
 			pass
 
-	return trajectories
+		break
+
+	return data
 
 
 def saveTrajectory(data, sname):
@@ -119,5 +123,6 @@ if __name__ == '__main__':
 	genre = sys.argv[3]
 
 	tdata = readData(fname, genre)
-	saveTrajectory(tdata, sname)
+	print(tdata)
+	#saveTrajectory(tdata, sname)
 		

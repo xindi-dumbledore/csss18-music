@@ -8,6 +8,7 @@ from sklearn.model_selection import cross_validate
 from sklearn import svm
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neural_network import MLPClassifier
+from sklearn import preprocessing
 
 
 def readFeatures(fname):
@@ -17,8 +18,10 @@ def readFeatures(fname):
 		next(reader)
 		for row in reader:
 			label = row[-1]
-			features = list(map(float, row[:-3]))
-			del features[5]								# Get rid of 5 because of high correlation
+			features = list(map(float, row[:-1]))
+			#features = [row[0], row[2], row[4], row[5], row[6], row[8], row[9]]
+			features = list(map(float, features))
+			#del features[5]								# Get rid of 5 because of high correlation
 			features = [x if not np.isnan(x) else 0 for x in features]
 			if label not in data:
 				data[label] = []
@@ -34,14 +37,19 @@ def sampling(data, labels=None):
 	if labels is None:
 		labels = set(data.keys())
 
+	dcount = {l:len(data[l]) for l in labels}
+	dsize = min(dcount.values())
+
+	print(dsize)
+	
 	for l in labels:
-		features = data[l]
+		features = data[l][:dsize]
 		for d in features:
 			X.append(d)
 			y.append(l)
 
-	sm = SMOTE()
-	X, y = sm.fit_resample(X, y)
+	#sm = SMOTE()
+	#X, y = sm.fit_resample(X, y)
 
 	return X, y
 
@@ -74,7 +82,9 @@ if __name__ == '__main__':
 	fname = sys.argv[1]
 	sname = sys.argv[2]
 
-	labelslist = [None, ['CLASSICAL','FOLK'], ['CLASSICAL','JAZZ'],['CLASSICAL','POP'],['CLASSICAL','ROCK'],['FOLK','JAZZ'],['FOLK','POP'],['FOLK','ROCK'],['JAZZ','POP'],['JAZZ','ROCK'],['POP','ROCK']]
+	labelslist = [None, ['CLASSICAL','FOLK'], ['CLASSICAL','JAZZ'],['CLASSICAL','POP-ROCK'],['FOLK','JAZZ'],['FOLK','POP-ROCK'],['JAZZ','POP-ROCK']]
+
+	#labelslist = [None, ['CLASSICAL','POP-ROCK'],['CLASSICAL','ROCK'],['POP','ROCK']]
 	
 	for labels in labelslist:
 		if labels is None:
@@ -88,14 +98,17 @@ if __name__ == '__main__':
 		data = readFeatures(fname)
 		X, y = sampling(data, labels)
 
-		#featureImportance(X,y)
-		clf_svm = svm.SVC(kernel='rbf', gamma='scale', decision_function_shape='ovo')
+		featureImportance(X,y)
+		#clf_svm = svm.SVC(gamma='scale', decision_function_shape='ovo')
+		#clf_svm = svm.LinearSVC()
 		clf_rf = RandomForestClassifier(n_estimators=100)
-		clf_mp = MLPClassifier(solver='sgd', alpha=1e-5, hidden_layer_sizes=(10, 5), learning_rate='adaptive')
+		#clf_mp = MLPClassifier(solver='sgd', alpha=1e-5, hidden_layer_sizes=(10, 5), learning_rate='adaptive')
 
-		results.append(classifyScores(clf_svm, X,y) + ['SVM', classes,'SimpleNetwork'])
+		#results.append(classifyScores(clf_svm, X,y) + ['SVM', classes,'MusicHON'])
 		results.append(classifyScores(clf_rf, X, y) + ['RF', classes, 'SimpleNetwork'])
-		results.append(classifyScores(clf_mp, X, y) + ['MLP', classes,'SimpleNetwork'])
+		#results.append(classifyScores(clf_mp, X, y) + ['MLP', classes,'MusicHON'])
 
 		saveClassificationResuts(sname, results)
-		print(results)
+		for r in results:
+			print(r)
+

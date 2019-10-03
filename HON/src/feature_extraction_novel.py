@@ -110,8 +110,11 @@ def getBranchisess(graph, tau=0.1):
     # add nodes in case there are nodes which are not included in edges
     sg.add_nodes_from(graph.nodes())
 
+    n = graph.number_of_nodes()
     degree = nx.degree(sg)
-    return [d[1] for d in degree]
+    degree = [d[1]/n for d in degree]
+    
+    return np.mean(degree), np.std(degree)
 
 
 def getRepeatedness(graph, tau=0.75):
