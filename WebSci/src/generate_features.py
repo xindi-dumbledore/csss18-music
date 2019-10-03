@@ -49,6 +49,7 @@ def getGMLNetwork(fname):
 
 
 def getPitchOffset(graph):
+	# this function is currently incorrect
 	rpitch = set([int(u.split('|')[0]) for u in graph.nodes()])
 	return -1 * min(rpitch)
 
@@ -95,7 +96,7 @@ def getAbruptness(graph, label):
 	pitch = getPitchOffset(graph)
 	#d = int(np.sqrt(graph.number_of_nodes()))
 	#u_node_betweeness = nx.betweenness_centrality(graph, k=d)
-	edge_betweeness = nx.edge_betweenness_centrality(graph, weight='weigh', normalized=True)
+	edge_betweeness = nx.edge_betweenness_centrality(graph, weight='weight', normalized=True)
 		
 	transition_prob = graph.edges(data=True)
 
@@ -371,8 +372,8 @@ def getPitchRange(graph):
 	freq_in_piece = sorted([getFrequency(n + pitch) for n in pitches_in_piece], reverse=True)
 	pitches_in_piece = sorted(pitches_in_piece, reverse=True)
 
-	freq_range_of_piece = np.mean(freq_in_piece[:5]) - np.mean(freq_in_piece[-5:])
-	pitch_range_of_piece = np.mean(pitches_in_piece[:5]) - np.mean(pitches_in_piece[-5:])
+	freq_range_of_piece = max(freq_in_piece) - min(freq_in_piece) #np.mean(freq_in_piece[:5]) - np.mean(freq_in_piece[-5:])
+	pitch_range_of_piece = max(pitches_in_piece) - min(pitches_in_piece) #np.mean(pitches_in_piece[:5]) - np.mean(pitches_in_piece[-5:])
 
 	return np.mean(freq_range_in_rules), np.mean(pitch_range_in_rules), freq_range_of_piece, pitch_range_of_piece
 
