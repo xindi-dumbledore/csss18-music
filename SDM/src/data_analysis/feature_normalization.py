@@ -66,6 +66,5 @@ if __name__ == '__main__':
 	sname = sys.argv[2]
 
 	data = readData(fname)
-	print(len(data), len(data[0]))
 	data = normalize(data)
 	saveData(sname, data)

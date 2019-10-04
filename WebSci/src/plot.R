@@ -41,13 +41,13 @@ drawDistribution <- function(fname, sname){
   data <- read.csv(fname, sep = '\t', header = TRUE)
   
   #data$abruptness_prob <- scale(data$abruptness, scale = TRUE, center = TRUE)
-  
-  cdat <- ddply(data, "genre", summarise, m=mean(repeatedness))
+
+  cdat <- ddply(data, "genre", summarise, m=mean(pitch_edge))
   
   print(cdat)
   #print(data)
   
-  p1 <- ggplot(data, aes(x=repeatedness,  color=genre, fill=genre))
+  p1 <- ggplot(data, aes(x=pitch_edge,  color=genre, fill=genre))
   #p1 <- p1 + geom_density(alpha=0.25, adjust=2, size=1)
   p1 <- p1 + geom_line(stat='density', size=1, adjust=1.5)
   p1 <- p1 + geom_vline(data=cdat, aes(xintercept=m, color=genre), linetype='dashed', show.legend = FALSE, size=1)
@@ -55,10 +55,10 @@ drawDistribution <- function(fname, sname){
   #p1 <- p1 + scale_x_sqrt()
   #p1 <- p1 + scale_x_log10()
   #p1 <- p1 + coord_cartesian(xlim=c(10,10000))
-  #p1 <- p1 + xlim(0, 20)
+  p1 <- p1 + xlim(0, 20)
   p1 <- p1 + scale_color_brewer(palette="Set1") + scale_fill_brewer(palette="Set1")
   #p1 <- p1 + xlim(-2.5,2.5)
-  p1 <- p1 + theme(legend.position="bottom") + labs(fill='',color='') + xlab('Repeatedness') + ylab('Density')
+  p1 <- p1 + theme(legend.position="bottom") + labs(fill='',color='') + xlab('Pitch Range across Edge') + ylab('Density')
   
   tikz(file = sname, width = 4, height = 2.5, standAlone = TRUE)
   print(p1)
