@@ -54,7 +54,7 @@ def parallelComputation(arg):
 		return data, t, f
 	except:
 		pass
-	return None
+	#return None
 
 
 if __name__ == '__main__':
@@ -69,9 +69,9 @@ if __name__ == '__main__':
 		musictype = m[0]
 		musiclabel = m[1]
 
-		fnames = getFiles(input_dirname, musictype)[:5]
-		#np.random.shuffle(fnames)
-		#fnames = fnames[:500]
+		fnames = getFiles(input_dirname, musictype)
+
+		print(len(fnames))
 
 		args = [[f,input_dirname,musiclabel] for f in fnames]
 
@@ -81,6 +81,7 @@ if __name__ == '__main__':
 		for r in results:
 			if r is None:
 				continue
+			#for l in r[0][0]:
 			saveData(featurefile, r[0], musiclabel, r[2], r[1])
 
 

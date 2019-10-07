@@ -16,6 +16,7 @@ from itertools import permutations
 import itertools
 from scipy.stats import wasserstein_distance
 import time
+from scipy.stats import skew
 
 # ----- Part to set timeout if something takes too long
 import signal
@@ -253,51 +254,49 @@ def getBranchisess(graph, tau=0.1):
 	return 0
 
 
-def estPathLength(graph, nodes, p=0.75):
+def estPathLength(graph):
 	lengths = []
 	edge_weight = nx.get_edge_attributes(graph, "weight")
 	pathProb = []
 
-	for u in nodes:
-		n = {v:edge_weight[(u,v)] for v in graph.neighbors(u)}
-		if len(n) == 0:
-			pathProb.append([set([u]), None, -1])
-			continue
-		v = max(n, key=n.get)
-		if edge_weight[(u,v)] > p:
-			pathProb.append([set([u,v]), v, edge_weight[(u,v)]])
-		else:
-			pathProb.append([set([u]), None, -1])
+	#print(nx.info(graph))
+	# initial prob
+	initial_prob = nx.eigenvector_centrality_numpy(graph, weight='weight')
+	#initial_prob = {u:1/graph.number_of_nodes() for u in graph.nodes()}
 
-	stop = False
-	prev_avg = 0
-	while not stop:
+	for u in graph.nodes():
+		pathProb.append([[u], u, initial_prob[u], None])
+	
+	variance, skewness = {}, {}
+	l = 0
+	while l < 5:
+		l += 1
+		probs, tprobPaths = [], []
 		for path in pathProb:
+			if path[0] is None:
+				continue
+
 			u = path[1]
 			p = path[2]
-			if p < 0:
-				continue
+			
 			n = {v:edge_weight[(u,v)] for v in graph.neighbors(u)}
 			if len(n) == 0:
 				continue
-			v = max(n, key=n.get)
-			if p * edge_weight[(u,v)] >= p:
-				path[0].update([v])
-				path[1] = v
-				path[2] = path[2] * edge_weight[(u,v)]
-			else:
-				path[2] = -1
-		avg = np.mean([len(p[0]) - 1 for p in pathProb])
-		#print(avg)
-		if avg - prev_avg < 0.1:
-			stop = True
-		else:
-			prev_avg = avg
-			stop = False
+			
+			for v in n:
+				pr = p * edge_weight[(u,v)]
+				probs.append(pr)
+				no = path[0] + [v]
+				#print(path[0], no)
+				tprobPaths.append([no, v, pr, None])
+		
+		variance[l] = np.var(probs)
+		skewness[l] = skew(probs)
+		pathProb = tprobPaths
+		#print(probs)
+		#print(variance, skewness, np.mean(probs), sum(probs), len(probs), len(pathProb))
 
-	lengths = [len(p[0])-1 for p in pathProb]
-
-	return np.mean(lengths)
+	return variance[5]
 
 
 def getRepeatedness(graph, tau=0.75):
@@ -323,9 +322,10 @@ def getRepeatedness(graph, tau=0.75):
 				max_length = len(each_path)
 
 			edges = zip(each_path[:-1], each_path[1:])
-			prob = sum([edge_weight[edge] for edge in edges])
+			prob = np.prod([edge_weight[edge] for edge in edges])
 			path_dict[','.join(each_path)] = prob
 
+	#print(path_dict)
 	return max_length, len(path_dict)
 
 	"""
@@ -462,11 +462,15 @@ def generateFeatures(graph, label):
 
 	stime = time.process_time()
 
+	print(nx.info(graph))
+	
+	d2 = estPathLength(graph)
+
 	d0 = getAbruptness(graph, label)
 
 	d1  = getBranchisess(graph, 0.10)
 
-	d2, d7 = getRepeatedness(graph, 0.75)
+	#d2, d7 = getRepeatedness(graph, 0.75)
 
 	d3 = getMelodic(graph)
 
@@ -486,7 +490,7 @@ def generateFeatures(graph, label):
 	d13 = nx.average_clustering(graph)
 	d14 = community.modularity(community.best_partition(graph.to_undirected()), graph.to_undirected())
 
-	data = [d0, d1, d2, d3, d4, d5, d6, d7, d8, d9, d10, d11, d12, d13, d14]
+	data = [d0, d1, d2, d3, d4, d5, d6, 0, d8, d9, d10, d11, d12, d13, d14]
 
 	t = time.process_time() - stime
 

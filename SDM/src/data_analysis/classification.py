@@ -1,7 +1,7 @@
 import csv
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.feature_selection import SelectFromModel
-from imblearn.over_sampling import SMOTE
+#from imblearn.over_sampling import SMOTE
 import sys
 import numpy as np
 from sklearn.model_selection import cross_validate
@@ -19,9 +19,12 @@ def readFeatures(fname):
 		next(reader)
 		for row in reader:
 			label = row[-1]
-			#features = list(map(float, row[:-1]))
-			features = [row[0], row[1], row[2], row[3], row[4], row[5], row[6]]
+			features = list(map(float, row[:-1]))
+			#features = list(map(float, row[:-4]))
+			
+			#features = [row[0], row[1], row[2], row[3], row[4], row[5], row[6]]
 			features = list(map(float, features))
+			
 			#del features[5]								# Get rid of 5 because of high correlation
 			features = [x if not np.isnan(x) else 0 for x in features]
 			if label not in data:
@@ -44,8 +47,9 @@ def sampling(data, labels=None):
 	print(dsize)
 	
 	for l in labels:
-		print(l,len(data[l]))
-		features = data[l][:dsize]
+		features = data[l]
+		np.random.shuffle(features)
+		features = features[:dsize]
 		for d in features:
 			X.append(d)
 			y.append(l)
@@ -69,6 +73,13 @@ def classifyScores(clf, X,y):
 	return [precision[0], precision[1], recall[0], recall[1], f1[0], f1[1], accuracy[0], accuracy[1]]
 
 
+def classifyScoresBinary(clf, X, y):
+	scores = cross_validate(clf, X, y, cv=5, scoring=['roc_auc'])
+	print(scores)
+
+	return [np.mean(scores['test_roc_auc']), np.std(scores['test_roc_auc'])]
+
+
 def saveClassificationResuts(sname, data):
 	with open(sname, 'a+') as f:
 		writer = csv.writer(f, delimiter='\t')
@@ -86,7 +97,11 @@ if __name__ == '__main__':
 	fname = sys.argv[1]
 	sname = sys.argv[2]
 
-	labelslist = [None, ['CLASSICAL','FOLK'], ['CLASSICAL','JAZZ'],['CLASSICAL','POP'],['CLASSICAL','ROCK'],['FOLK','JAZZ'],['FOLK','POP'],['FOLK','ROCK'],['JAZZ','ROCK'],['JAZZ','POP'],['POP','ROCK']]
+	#alg = 'SimpleNetwork'
+	alg = 'MusicHON+'
+
+	#labelslist = [['CLASSICAL','FOLK'], ['CLASSICAL','JAZZ'],['CLASSICAL','POP'],['CLASSICAL','ROCK'],['FOLK','JAZZ'],['FOLK','POP'],['FOLK','ROCK'],['JAZZ','ROCK'],['JAZZ','POP'],['POP','ROCK']]
+	labelslist = [['MOZART','BACH'], ['MOZART','VIVALDI'],['MOZART','BEATLES'],['MOZART','NIRVANA'],['BACH','VIVALDI'],['BACH','BEATLES'],['BACH','NIRVANA'],['VIVALDI','BEATLES'],['VIVALDI','NIRVANA'],['BEATLES','NIRVANA']]
 
 	#labelslist = [None, ['CLASSICAL','POP-ROCK'],['CLASSICAL','ROCK'],['POP','ROCK']]
 	
@@ -108,11 +123,15 @@ if __name__ == '__main__':
 		clf_rf = RandomForestClassifier(n_estimators=100)
 		clf_mp = MLPClassifier(solver='lbfgs', activation='relu', alpha=1e-5, hidden_layer_sizes=(5, 5), learning_rate='adaptive')
 
-		results.append(classifyScores(clf_svm, X,y) + ['SVM', classes,'MusicHON'])
-		results.append(classifyScores(clf_rf, X, y) + ['RF', classes, 'MusicHON'])
-		results.append(classifyScores(clf_mp, X, y) + ['MLP', classes,'MusicHON'])
+		#results.append(classifyScores(clf_svm, X,y) + ['SVM', classes,'MusicHON'])
+		#results.append(classifyScores(clf_rf, X, y) + ['RF', classes, 'MusicHON'])
+		#results.append(classifyScores(clf_mp, X, y) + ['MLP', classes,'MusicHON'])
+
+		results.append(classifyScoresBinary(clf_svm, X,y) + ['SVM', labels[0], labels[1], alg])
+		results.append(classifyScoresBinary(clf_rf, X, y) + ['RF', labels[0], labels[1], alg])
+		results.append(classifyScoresBinary(clf_mp, X, y) + ['MLP', labels[0], labels[1], alg])
 
 		saveClassificationResuts(sname, results)
 		for r in results:
-			print(r[4],r[-3:-1])
+			print(r)
 
